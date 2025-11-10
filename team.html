@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Team - Gautam Lady Shoes</title>
+    <link rel="shortcut icon" href="logo.jpg">
+    <link rel="stylesheet" href="new.css">
+    <link rel="stylesheet" href="team.css">
+    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Welcome Back</h2>
+                <button class="close-btn" onclick="closeLoginModal()">&times;</button>
+            </div>
+            
+            <div class="modal-content">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="showLogin()">Login</button>
+                    <button class="tab-btn" onclick="showRegister()">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <div class="auth-form" id="loginForm">
+                    <form action="login.php" method="POST" id="loginFormSubmit">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                            <span class="error-message" id="emailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="password-input">
+                                <input type="password" id="password" name="password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                    <span id="toggleIcon1">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="passwordError"></span>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="remember" id="remember">
+                                <span class="checkmark"></span>
+                                Remember me
+                            </label>
+                            <a href="#" class="forgot-link">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Sign In</button>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div class="auth-form hidden" id="registerForm">
+                    <form action="register.php" method="POST" id="registerFormSubmit">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="first_name" required>
+                                <span class="error-message" id="firstNameError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="last_name" required>
+                                <span class="error-message" id="lastNameError"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regEmail">Email Address</label>
+                            <input type="email" id="regEmail" name="email" required>
+                            <span class="error-message" id="regEmailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+977-9851234567">
+                            <span class="error-message" id="phoneError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regPassword">Password</label>
+                            <div class="password-input">
+                                <input type="password" id="regPassword" name="password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('regPassword')">
+                                    <span id="toggleIcon2">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="regPasswordError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="password-input">
+                                <input type="password" id="confirmPassword" name="confirm_password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                                    <span id="toggleIcon3">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="confirmPasswordError"></span>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="terms" id="terms" required>
+                                <span class="checkmark"></span>
+                                I agree to the <a href="#" style="color: #8B0000;">Terms & Conditions</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Create Account</button>
+                    </form>
+                </div>
+
+                <div class="divider">
+                    <span>or</span>
+                </div>
+
+                <div class="social-login">
+                    <button type="button" class="social-btn google-btn">
+                        <span class="social-icon">🔍</span>
+                        Continue with Google
+                    </button>
+                    <button type="button" class="social-btn facebook-btn">
+                        <span class="social-icon">📘</span>
+                        Continue with Facebook
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div class="message-container" id="messageContainer" style="display: none;">
+        <div class="message" id="message"></div>
+    </div>
+
+   
+    <script>
+        // Modal Functions
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Tab Functions
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.querySelectorAll('.tab-btn')[0].classList.remove('active');
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        }
+
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            let toggleIcon;
+            
+            if (fieldId === 'password') toggleIcon = document.getElementById('toggleIcon1');
+            else if (fieldId === 'regPassword') toggleIcon = document.getElementById('toggleIcon2');
+            else if (fieldId === 'confirmPassword') toggleIcon = document.getElementById('toggleIcon3');
+            
+            if (passwordInput && passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                if (toggleIcon) toggleIcon.textContent = '🙈';
+            } else {
+                if (passwordInput) passwordInput.type = 'password';
+                if (toggleIcon) toggleIcon.textContent = '👁️';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('loginModal');
+            if (e.target === modal) {
+                closeLoginModal();
+            }
+        });
+
+        // Login form validation
+        document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Clear previous errors
+            document.getElementById('emailError').textContent = '';
+            document.getElementById('passwordError').textContent = '';
+            
+            let isValid = true;
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('emailError').textContent = 'Please enter a valid email address';
+                isValid = false;
+            }
+            
+            // Password validation
+            if (password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters long';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Submit form via AJAX
+                const formData = new FormData(this);
+                
+                fetch('login.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showMessage(data.message, data.success ? 'success' : 'error');
+                    
+                    if (data.success) {
+                        setTimeout(() => {
+                            closeLoginModal();
+                            showMessage('Login successful! Welcome back.', 'success');
+                            // Optionally reload page or update UI
+                            // window.location.reload();
+                        }, 1500);
+                    }
+                })
+                .catch(error => {
+                    showMessage('An error occurred. Please try again.', 'error');
+                });
+            }
+        });
+
+        // Register form validation
+        document.getElementById('registerFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            
+            let isValid = true;
+            
+            // Name validation
+            if (firstName.length < 2) {
+                document.getElementById('firstNameError').textContent = 'First name must be at least 2 characters';
+                isValid = false;
+            }
+            
+            if (lastName.length < 2) {
+                document.getElementById('lastNameError').textContent = 'Last name must be at least 2 characters';
+                isValid = false;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('regEmailError').textContent = 'Please enter a valid email address';
+                isValid = false;
+            }
+            
+            // Phone validation (optional but if provided, should be valid)
+            if (phone && !/^(\+977-?)?[0-9]{10}$/.test(phone.replace(/\s/g, ''))) {
+                document.getElementById('phoneError').textContent = 'Please enter a valid phone number';
+                isValid = false;
+            }
+            
+            // Password validation
+            if (password.length < 6) {
+                document.getElementById('regPasswordError').textContent = 'Password must be at least 6 characters long';
+                isValid = false;
+            }
+            
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                isValid = false;
+            }
+            
+            if (!terms) {
+                showMessage('Please accept the Terms & Conditions', 'error');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Submit form via AJAX
+                const formData = new FormData(this);
+                
+                fetch('register.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showMessage(data.message, data.success ? 'success' : 'error');
+                    
+                    if (data.success) {
+                        setTimeout(() => {
+                            showLogin(); // Switch to login tab
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    showMessage('An error occurred. Please try again.', 'error');
+                });
+            }
+        });
+
+        // Show message function
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageElement = document.getElementById('message');
+            
+            messageElement.textContent = message;
+            messageElement.className = `message ${type}`;
+            messageContainer.style.display = 'block';
+            
+            setTimeout(() => {
+                messageContainer.style.display = 'none';
+            }, 5000);
+        }
+
+        // Social login handlers
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.google-btn')) {
+            showMessage('Google login integration coming soon!', 'info');
+            }
+            if (e.target.closest('.facebook-btn')) {
+            showMessage('Facebook login integration coming soon!', 'info');
+            }
+        });
+    </script>
+    
+    <script src="sidebar.js"></script>
+     <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <h2>Gautam Lady Shoes</h2>
+            </div>
+            <button class="close-btn" id="closeSidebar">
+                <span>&times;</span>
+            </button>
+        </div>
+
+        <div class="sidebar-content">
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="juttapasal.html" class="menu-link active">
+                        <span class="menu-icon">🏠</span>
+                        <span class="menu-text">Home</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="" class="menu-link">
+                        <span class="menu-icon">👡</span>
+                        <span class="menu-text">slippers</span>
+                        <span class="menu-arrow">▼</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="slippers.html#block-heel-section" class="submenu-link">
+                                <span class="submenu-text">Block Heel Slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="slippers.html#flat-slippers-section" class="submenu-link">
+                                <span class="submenu-text">Flat Slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="slippers.html#medium-heel-section" class="submenu-link">
+                                <span class="submenu-text">medium heel slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="slippers.html#small-heel-section" class="submenu-link">
+                                <span class="submenu-text">small heel slippers</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <a href="" class="menu-link">
+                        <span class="menu-icon">👗</span>
+                        <span class="menu-text">Clothing</span>
+                        <span class="menu-arrow">▼</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="clothing.html#newar" class="submenu-link">
+                                <span class="submenu-text">krishna and radha dress</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="clothing.html#Pasni" class="submenu-link">
+                                <span class="submenu-text">Pasni</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="clothing.html#Daura" class="submenu-link">
+                                <span class="submenu-text">Daura Suruwal</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="clothing.html#sada" class="submenu-link">
+                                <span class="submenu-text">Plain kurta</span>
+                            </a>
+                        </li>
+                         <li class="submenu-item">
+                            <a href="clothing.html#special" class="submenu-link">
+                                <span class="submenu-text">Chicken kadai kurta</span>
+                            </a>
+                        </li>
+                         <li class="submenu-item">
+                            <a href="clothing.html#gunyo" class="submenu-link">
+                                <span class="submenu-text">Gunyu Choli and girls kurta</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <a href="collection.html" class="menu-link">
+                        <span class="menu-icon">✨</span>
+                        <span class="menu-text">Collections</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#about" class="menu-link">
+                        <span class="menu-icon">ℹ️</span>
+                        <span class="menu-text">About</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#contact" class="menu-link">
+                        <span class="menu-icon">📞</span>
+                        <span class="menu-text">Contact</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="team.html" class="menu-link">
+                        <span class="menu-icon">👥</span>
+                        <span class="menu-text">Our Team</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="social-links">
+                    <a href="#" class="social-link"></a>
+                    <a href="#" class="social-link">📷</a>
+                    <a href="#" class="social-link">🐦</a>
+                </div>
+                <p class="footer-text">© 2024 Gautam Lady Shoes</p>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Gautam Lady Shoes</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="juttapasal.html">Home</a></li>
+                <li><a href="slippers.html">Slippers</a></li>
+                <li><a href="clothing.html">Clothing</a></li>
+                <li><a href="collection.html">other collection</a></li>
+                <li><a href="juttapasal.html#about">About</a></li>
+                <li><a href="#contact">contact</a></li>
+                <li><a href="team.html">Our team</a></li>
+                <li><button class="login-btn-nav" onclick="openLoginModal()">Login</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="team-hero">
+        <div class="container">
+            <h1 class="team-hero-title">Meet Our Team</h1>
+            <p class="team-hero-subtitle">The passionate artisans and professionals behind Gautam Lady Shoes</p>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section">
+        <div class="container">
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="phoyo.jpg" alt="Anita Karki">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779801234567" class="social-link">📞</a>
+                                <a href="mailto:anita@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Aama</h3>
+                        <p class="team-role">MD</p>
+                        <p class="team-intro">She is the leader of our team who always believes on faith of god and hardwork to lead success team. Also known as chuchi ama </p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779865369025" class="contact-link">+977 9865369025</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="lklkl.jpg" alt="Rajesh Limbu">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779890123456" class="social-link">📞</a>
+                                <a href="mailto:rajesh@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Buwa</h3>
+                        <p class="team-role">Founder </p>
+                        <p class="team-intro">Manages our extensive inventory of traditional items and ensures proper storage and organization of all cultural products.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779890123456" class="contact-link">+977 9890123456</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 1 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\kpg.jpg" alt="Bharat Gautam">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779851223736" class="social-link">📞</a>
+                                <a href="mailto:bharatgautam@gmail.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Kedar Gautam</h3>
+                        <p class="team-role">CEO </p>
+                        <p class="team-intro">"After the night the sun always rise again" this is what our CEO believes. He is extremely dedicated and enthusiastic. His CA and financial backgroung of studies leads our success.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779849575675" class="contact-link">+977 9849575675</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\san.jpg" alt="Sita Gautam">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779841234567" class="social-link">📞</a>
+                                <a href="mailto:sita@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Santosh KC</h3>
+                        <p class="team-role">salesman</p>
+                        <p class="team-intro">Leading our family business with three generations of craftsmanship experience, dedicated to preserving Nepalese traditional artistry.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779863271981" class="contact-link">+977 9863271981</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\bg.jpg" alt="Ram Shrestha">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779812345678" class="social-link">📞</a>
+                                <a href="mailto:ram@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Bharat  Gautam</h3>
+                        <p class="team-role">salesman</p>
+                        <p class="team-intro">Leading our family business with three generations of craftsmanship experience, dedicated to preserving Nepalese traditional artistry.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779851223736" class="contact-link">+977 9851223726</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 4 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\daraj.jpg" alt="Maya Tamang">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779851223736" class="social-link">📞</a>
+                                <a href="mailto:maya@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Saroj Bajagain</h3>
+                        <p class="team-role">sales excecutive</p>
+                        <p class="team-intro"> A part from our family he always brings cheerfullness. His courage and perseverance regularly motivates us to build strong team </p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779823456789" class="contact-link">+977 9763401953</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 5 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\dur.jpg" alt="Arjun Maharjan">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779834567890" class="social-link">📞</a>
+                                <a href="mailto:arjun@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Durga Gautam</h3>
+                        <p class="team-role">saleswoman</p>
+                        <p class="team-intro">Leading our family business with three generations of craftsmanship experience, dedicated to preserving Nepalese traditional artistry.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779834567890" class="contact-link">+977 9834567890</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 6 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\....jpg" alt="Kamala Shakya">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779845678901" class="social-link">📞</a>
+                                <a href="mailto:kamala@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Ishwori Gautam</h3>
+                        <p class="team-role">Director</p>
+                        <p class="team-intro"> She is the most creative and dedicated person of our team as being directore of this organization.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779845678901" class="contact-link">+977 9841092820</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 7 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\bbb.jpg" alt="Deepak Thapa">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779856789012" class="social-link">📞</a>
+                                <a href="mailto:deepak@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Rajan Chaulagain</h3>
+                        <p class="team-role">Sales Manager</p>
+                        <p class="team-intro">Leading our family business with three generations of craftsmanship experience, dedicated to preserving Nepalese traditional artistry.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779856789012" class="contact-link">+977 9841844898</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 8 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\nam.jpg" alt="Sunita Rai">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779867890123" class="social-link">📞</a>
+                                <a href="mailto:sunita@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Namraj Gautam</h3>
+                        <p class="team-role"> Abroad Sales Manager </p>
+                        <p class="team-intro"> He always thinks for bulk sales rather than retail sales. sometimes he forget to get profit from customer so, it is beneficial for all the customer to get handicrafts on your desire prices. </p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779867890123" class="contact-link">+977 9849591758</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 9 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\pk.jpg" alt="Bikash Gurung">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779878901234" class="social-link">📞</a>
+                                <a href="mailto:bikash@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Pratik Chaulagain</h3>
+                        <p class="team-role">jr salesman</p>
+                        <p class="team-intro">Leading our family business with three generations of craftsmanship experience, dedicated to preserving Nepalese traditional artistry.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779878901234" class="contact-link">+977 9878901234</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 10 -->
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="C:\xampp\htdocs\website\team\pc.jpg" alt="Parvati Magar">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779889012345" class="social-link">📞</a>
+                                <a href="mailto:parvati@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Prajwol Chaulagain</h3>
+                        <p class="team-role">Salesman</p>
+                        <p class="team-intro">Leading our family business with three generations of craftsmanship experience, dedicated to preserving Nepalese traditional artistry.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779889012345" class="contact-link">+977 9840021021</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-image">
+                        <img src="cc62f32d-2824-4fad-b326-25aa371828fa.jpg" alt="Anita Karki">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779801234567" class="social-link">📞</a>
+                                <a href="mailto:anita@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Devi Nagarkoti</h3>
+                        <p class="team-role">Cultural Consultant</p>
+                        <p class="team-intro">Provides expertise on cultural authenticity and traditional significance, ensuring our products honor Nepalese heritage properly.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779801234567" class="contact-link">+977 9801234567</a>
+                        </div>
+                    </div>
+                </div>
+
+                
+                
+                 
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Gautam Lady Shoes</h3>
+                    <p>Preserving Nepal's traditional craftsmanship for future generations.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <p>Phone: +977 9851223736<br>
+                    Email: bharatgautam@gmail.com<br>
+                    Location: Machindranath, Kathmandu</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Store Hours</h4>
+                    <p>Anyday between 7AM-8PM</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Gautam Lady Shoes. All rights reserved. | Crafted with love in Nepal</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Team card animations
+        const teamCards = document.querySelectorAll('.team-card');
+        
+        const teamObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 100);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '50px'
+        });
+        
+        teamCards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.6s ease';
+            teamObserver.observe(card);
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        // Enhanced bidirectional scroll animation system
+        const observerOptions = {
+            threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+            rootMargin: '0px 0px 0px 0px'
+        };
+        
+        let lastScrollY = window.scrollY;
+        let scrollDirection = 'down';
+        
+        // Track scroll direction
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+            lastScrollY = currentScrollY;
+        });
+        
+        // Enhanced intersection observer for bidirectional animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const element = entry.target;
+                const ratio = entry.intersectionRatio;
+                
+                // Add scroll-animate class if not present
+                if (!element.classList.contains('scroll-animate')) {
+                    element.classList.add('scroll-animate');
+                }
+                
+                // Remove all animation classes first
+                element.classList.remove('fade-in-up', 'fade-out-down', 'fade-in-down', 'fade-out-up');
+                
+                if (entry.isIntersecting) {
+                    // Element is visible
+                    element.classList.add('animate');
+                    
+                    if (scrollDirection === 'down') {
+                        element.classList.add('fade-in-up');
+                    } else {
+                        element.classList.add('fade-in-down');
+                    }
+                } else {
+                    // Element is not visible
+                    if (ratio === 0) {
+                        if (scrollDirection === 'down') {
+                            element.classList.add('fade-out-up');
+                        } else {
+                            element.classList.add('fade-out-down');
+                        }
+                    }
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all animatable elements
+        document.querySelectorAll('.products-section, .about-section, .contact-section, .product-card, .section-title, .contact-card, .feature, .about-image, .about-text').forEach(section => {
+            observer.observe(section);
+        });
+        
+        // Enhanced product cards animation with stagger effect
+        const productCards = document.querySelectorAll('.product-card');
+        const productObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                const element = entry.target;
+                
+                if (!element.classList.contains('scroll-animate')) {
+                    element.classList.add('scroll-animate');
+                }
+                
+                element.classList.remove('fade-in-up', 'fade-out-down', 'fade-in-down', 'fade-out-up');
+                
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        if (scrollDirection === 'down') {
+                            element.classList.add('fade-in-up');
+                        } else {
+                            element.classList.add('fade-in-down');
+                        }
+                    }, index * 100); // Stagger effect
+                } else {
+                    if (scrollDirection === 'down') {
+                        element.classList.add('fade-out-up');
+                    } else {
+                        element.classList.add('fade-out-down');
+                    }
+                }
+            });
+        }, {
+            threshold: [0, 0.3, 0.7, 1],
+            rootMargin: '50px 0px -50px 0px'
+        });
+        
+        productCards.forEach(card => {
+            productObserver.observe(card);
+        });
+        
+        // Navbar animation on scroll
+        const navbar = document.querySelector('.navbar');
+        let lastNavScrollY = window.scrollY;
+        
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            
+            if (currentScrollY > lastNavScrollY && currentScrollY > 100) {
+                // Scrolling down - hide navbar
+                navbar.style.transform = 'translateY(-100%)';
+            } else {
+                // Scrolling up - show navbar
+                navbar.style.transform = 'translateY(0)';
+            }
+            
+            // Add background blur when scrolled
+            if (currentScrollY > 50) {
+                navbar.style.background = 'rgba(139, 0, 0, 0.98)';
+                navbar.style.backdropFilter = 'blur(15px)';
+            } else {
+                navbar.style.background = 'rgba(139, 0, 0, 0.95)';
+                navbar.style.backdropFilter = 'blur(10px)';
+            }
+            
+            lastNavScrollY = currentScrollY;
+        });
+        
+        // Image loading animation
+        document.querySelectorAll('img').forEach(img => {
+            if (img.complete) {
+                img.classList.add('loaded');
+            } else {
+                img.addEventListener('load', () => {
+                    img.classList.add('loaded');
+                });
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Parallax effect for hero section
+        const hero = document.querySelector('.hero');
+        const heroContent = document.querySelector('.hero-content');
+        const heroImage = document.querySelector('.hero-image');
+        
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxSpeed = 0.5;
+            
+            if (hero && scrolled < hero.offsetHeight) {
+                heroContent.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
+                heroImage.style.transform = `translateY(${scrolled * parallaxSpeed * 0.3}px)`;
+            }
+        });
+        
+        // Add loading animation to the page
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

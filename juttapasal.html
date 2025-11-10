@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+    <title>Gautam Lady Shoe -Traditional Nepalese Slippers & Clothing</title>
+    <link rel="shortcut icon" href="logo.jpg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="sidebar.css">
+   <link rel="stylesheet" href="login.css">
+    
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+     <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Welcome Back</h2>
+                <button class="close-btn" onclick="closeLoginModal()">&times;</button>
+            </div>
+            
+            <div class="modal-content">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="showLogin()">Login</button>
+                    <button class="tab-btn" onclick="showRegister()">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <div class="auth-form" id="loginForm">
+                    <form action="login.php" method="POST" id="loginFormSubmit">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                            <span class="error-message" id="emailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="password-input">
+                                <input type="password" id="password" name="password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                    <span id="toggleIcon1">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="passwordError"></span>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="remember" id="remember">
+                                <span class="checkmark"></span>
+                                Remember me
+                            </label>
+                            <a href="#" class="forgot-link">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Sign In</button>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div class="auth-form hidden" id="registerForm">
+                    <form action="register.php" method="POST" id="registerFormSubmit">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="first_name" required>
+                                <span class="error-message" id="firstNameError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="last_name" required>
+                                <span class="error-message" id="lastNameError"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regEmail">Email Address</label>
+                            <input type="email" id="regEmail" name="email" required>
+                            <span class="error-message" id="regEmailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+977-9851234567">
+                            <span class="error-message" id="phoneError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regPassword">Password</label>
+                            <div class="password-input">
+                                <input type="password" id="regPassword" name="password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('regPassword')">
+                                    <span id="toggleIcon2">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="regPasswordError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="password-input">
+                                <input type="password" id="confirmPassword" name="confirm_password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                                    <span id="toggleIcon3">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="confirmPasswordError"></span>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="terms" id="terms" required>
+                                <span class="checkmark"></span>
+                                I agree to the <a href="#" style="color: #8B0000;">Terms & Conditions</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Create Account</button>
+                    </form>
+                </div>
+
+                <div class="divider">
+                    <span>or</span>
+                </div>
+
+                <div class="social-login">
+                    <button type="button" class="social-btn google-btn">
+                        <span class="social-icon">🔍</span>
+                        Continue with Google
+                    </button>
+                    <button type="button" class="social-btn facebook-btn">
+                        <span class="social-icon">📘</span>
+                        Continue with Facebook
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div class="message-container" id="messageContainer" style="display: none;">
+        <div class="message" id="message"></div>
+    </div>
+
+   
+    <script>
+        // Modal Functions
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Tab Functions
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.querySelectorAll('.tab-btn')[0].classList.remove('active');
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        }
+
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            let toggleIcon;
+            
+            if (fieldId === 'password') toggleIcon = document.getElementById('toggleIcon1');
+            else if (fieldId === 'regPassword') toggleIcon = document.getElementById('toggleIcon2');
+            else if (fieldId === 'confirmPassword') toggleIcon = document.getElementById('toggleIcon3');
+            
+            if (passwordInput && passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                if (toggleIcon) toggleIcon.textContent = '🙈';
+            } else {
+                if (passwordInput) passwordInput.type = 'password';
+                if (toggleIcon) toggleIcon.textContent = '👁️';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('loginModal');
+            if (e.target === modal) {
+                closeLoginModal();
+            }
+        });
+
+        // Login form validation
+        document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Clear previous errors
+            document.getElementById('emailError').textContent = '';
+            document.getElementById('passwordError').textContent = '';
+            
+            let isValid = true;
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('emailError').textContent = 'Please enter a valid email address';
+                isValid = false;
+            }
+            
+            // Password validation
+            if (password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters long';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Submit form via AJAX
+                const formData = new FormData(this);
+                
+                fetch('login.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showMessage(data.message, data.success ? 'success' : 'error');
+                    
+                    if (data.success) {
+                        setTimeout(() => {
+                            closeLoginModal();
+                            showMessage('Login successful! Welcome back.', 'success');
+                            // Optionally reload page or update UI
+                            // window.location.reload();
+                        }, 1500);
+                    }
+                })
+                .catch(error => {
+                    showMessage('An error occurred. Please try again.', 'error');
+                });
+            }
+        });
+
+        // Register form validation
+        document.getElementById('registerFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            
+            let isValid = true;
+            
+            // Name validation
+            if (firstName.length < 2) {
+                document.getElementById('firstNameError').textContent = 'First name must be at least 2 characters';
+                isValid = false;
+            }
+            
+            if (lastName.length < 2) {
+                document.getElementById('lastNameError').textContent = 'Last name must be at least 2 characters';
+                isValid = false;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('regEmailError').textContent = 'Please enter a valid email address';
+                isValid = false;
+            }
+            
+            // Phone validation (optional but if provided, should be valid)
+            if (phone && !/^(\+977-?)?[0-9]{10}$/.test(phone.replace(/\s/g, ''))) {
+                document.getElementById('phoneError').textContent = 'Please enter a valid phone number';
+                isValid = false;
+            }
+            
+            // Password validation
+            if (password.length < 6) {
+                document.getElementById('regPasswordError').textContent = 'Password must be at least 6 characters long';
+                isValid = false;
+            }
+            
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                isValid = false;
+            }
+            
+            if (!terms) {
+                showMessage('Please accept the Terms & Conditions', 'error');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Submit form via AJAX
+                const formData = new FormData(this);
+                
+                fetch('register.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showMessage(data.message, data.success ? 'success' : 'error');
+                    
+                    if (data.success) {
+                        setTimeout(() => {
+                            showLogin(); // Switch to login tab
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    showMessage('An error occurred. Please try again.', 'error');
+                });
+            }
+        });
+
+        // Show message function
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageElement = document.getElementById('message');
+            
+            messageElement.textContent = message;
+            messageElement.className = `message ${type}`;
+            messageContainer.style.display = 'block';
+            
+            setTimeout(() => {
+                messageContainer.style.display = 'none';
+            }, 5000);
+        }
+
+        // Social login handlers
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.google-btn')) {
+            showMessage('Google login integration coming soon!', 'info');
+            }
+            if (e.target.closest('.facebook-btn')) {
+            showMessage('Facebook login integration coming soon!', 'info');
+            }
+        });
+    </script>
+    
+    <script src="sidebar.js"></script>
+     <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <h2>Gautam Lady Shoes</h2>
+            </div>
+            <button class="close-btn" id="closeSidebar">
+                <span>&times;</span>
+            </button>
+        </div>
+
+        <div class="sidebar-content">
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="juttapasal.html" class="menu-link active">
+                        <span class="menu-icon">🏠</span>
+                        <span class="menu-text">Home</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="" class="menu-link">
+                        <span class="menu-icon">👡</span>
+                        <span class="menu-text">slippers</span>
+                        <span class="menu-arrow">▼</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="slippers.html#block-heel-section" class="submenu-link">
+                                <span class="submenu-text">Block Heel Slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="slippers.html#flat-slippers-section" class="submenu-link">
+                                <span class="submenu-text">Flat Slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="slippers.html#medium-heel-section" class="submenu-link">
+                                <span class="submenu-text">medium heel slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="slippers.html#small-heel-section" class="submenu-link">
+                                <span class="submenu-text">small heel slippers</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <a href="" class="menu-link">
+                        <span class="menu-icon">👗</span>
+                        <span class="menu-text">Clothing</span>
+                        <span class="menu-arrow">▼</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="clothing.html#newar" class="submenu-link">
+                                <span class="submenu-text">Krishna and radha dress</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="clothing.html#Pasni" class="submenu-link">
+                                <span class="submenu-text">Pasni</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="clothing.html#Daura" class="submenu-link">
+                                <span class="submenu-text">Daura Suruwal</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="clothing.html#sada" class="submenu-link">
+                                <span class="submenu-text">Plain kurta</span>
+                            </a>
+                        </li>
+                         <li class="submenu-item">
+                            <a href="clothing.html#special" class="submenu-link">
+                                <span class="submenu-text">Chicken kadai kurta</span>
+                            </a>
+                        </li>
+                         <li class="submenu-item">
+                            <a href="clothing.html#gunyo" class="submenu-link">
+                                <span class="submenu-text">Gunyu Choli and girls kurta</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <a href="collection.html" class="menu-link">
+                        <span class="menu-icon">✨</span>
+                        <span class="menu-text">Collections</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#about" class="menu-link">
+                        <span class="menu-icon">ℹ️</span>
+                        <span class="menu-text">About</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#contact" class="menu-link">
+                        <span class="menu-icon">📞</span>
+                        <span class="menu-text">Contact</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="team.html" class="menu-link">
+                        <span class="menu-icon">👥</span>
+                        <span class="menu-text">Our Team</span>
+                    </a>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="social-links">
+                    <a href="#" class="social-link"></a>
+                    <a href="#" class="social-link">📷</a>
+                    <a href="#" class="social-link">🐦</a>
+                </div>
+                <p class="footer-text">© 2024 Gautam Lady Shoes</p>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo" style="margin-left: 20px;">
+                <h2>Gautam Lady Shoes</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#slippers">Slippers</a></li>
+                <li><a href="#clothing">Clothing</a></li>
+                <li><a href="#otheritems">other collection</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                  <li><a href="team.html">Our team</a></li>
+                <li><button class="login-btn-nav" onclick="openLoginModal()">Login</button></li>
+              
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Authentic Nepalese Craftsmanship</h1>
+            <p>Discover the timeless beauty of traditional Nepalese slippers and clothing, handcrafted by skilled artisans in the heart of the Himalayas</p>
+            <a href="#slippers" class="cta-button">Explore Our Collection</a>
+        </div>
+        <div class="hero-image">
+            <img src="https://imgs.search.brave.com/U-0QyICWwV_u0RTJ_IS11n_TetHjwvJIcVux25wxjdE/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLnBp/bmltZy5jb20vb3Jp/Z2luYWxzL2MzLzk2/Lzk3L2MzOTY5NzUy/Mzc0MjlhMjNiMTA5/Yzg1ZDRmMWMzYzI5/LmpwZw" alt="Traditional Nepalese Crafts" />
+        </div>
+    </section>
+
+    <!-- Traditional Slippers Section -->
+    <section id="slippers" class="products-section">
+        <div class="container">
+            <h2 class="section-title">Traditional Slippers</h2>
+            <p class="section-subtitle">Handwoven comfort meets authentic Nepalese design</p>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <a href="slippers.html#flat-slippers-section" class="product-link">
+                    <div class="product-image">
+                        <img src="https://imgs.search.brave.com/KEh5eUVnmIm-xkBRKkuARI44YAZX8QslVmJqRKhlUpE/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9hYXJv/aGkuY29tLmF1L2Nk/bi9zaG9wL2ZpbGVz/L05QSnV0dGkzLmpw/Zz92PTE3NDY4ODMx/NDQmd2lkdGg9MTQ0/NQ" alt="flat slippers"/>
+                    </div>
+                    <div class="product-info">
+                        <h3>Flat Slippers</h3>
+                        <div class="product-price">NPR 450</div>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="product-card">
+                    <a href="slippers.html#block-heel-section" class="product-link">
+                    <div class="product-image">
+                        <img src="https://imgs.search.brave.com/vsmT1rJtP0iO8cz2eZ0UwMYsJ-hK6E7miFSVv43cYcQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmV0/c3lzdGF0aWMuY29t/LzE0Mjg2MDIwL3Iv/aWwvNTJiOWVjLzQ5/NDA0NzUzNzEvaWxf/NjAweDYwMC40OTQw/NDc1MzcxX2RpODYu/anBn" alt="Wool Mountain Slippers" />
+                    </div>
+                    <div class="product-info">
+                        <h3>Block Heel Slippers</h3>
+                        <div class="product-price">NPR 1,300</div>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="product-card">
+                    <a href="slippers.html#small-heel-section" class="product-link">
+                    <div class="product-image">
+                        <img src="https://imgs.search.brave.com/uaFzT64O2d0Rc5US1Z3hduOptsy2Z1lgCIAqR5V-GvU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmV0/c3lzdGF0aWMuY29t/LzQ5ODU4MTM4L3Iv/aWwvY2U1NmNkLzY1/MTQ2OTk0MzAvaWxf/MzAweDMwMC42NTE0/Njk5NDMwXzdqZmcu/anBn" alt="Decorative Traditional Slippers" />
+                    </div>
+                    <div class="product-info">
+                        <h3>Small Heel Slippers</h3>
+                        <div class="product-price">NPR 550</div>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Traditional Clothing Section -->
+    <section id="clothing" class="products-section clothing-section">
+        <div class="container">
+            <h2 class="section-title">Traditional Clothing</h2>
+            <p class="section-subtitle">Authentic Nepalese garments celebrating our rich cultural heritage</p>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <a href="clothing.html#Daura" class="product-link">
+                    <div class="product-image" style="height: 300px;">
+                        <img src="https://imgs.search.brave.com/_ljWL7VJjt-DRopXT_QTOanljd-102zQ-dcdTCVFosU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9ib3V0/aXF1ZW5lcGFsLmNv/bS5hdS9jZG4vc2hv/cC9maWxlcy9kYXVy/YS1zdXJ1d2FsLWFu/ZC10b3BpLXNldC1p/bi1nb2xkLWJvdXRp/cXVlLW5lcGFsLnBu/Zz9jcm9wPXJlZ2lv/biZjcm9wX2hlaWdo/dD05NjAmY3JvcF9s/ZWZ0PTM4JmNyb3Bf/dG9wPTAmY3JvcF93/aWR0aD02NDMmdj0x/NzQyODk2MzQzJndp/ZHRoPTcyMA" alt="Traditional Daura Suruwal"  style="height:450px;"/>
+                    </div>
+                    <div class="product-info">
+                        <h3>Daura Suruwal</h3>
+                        <p>The national dress of Nepal, featuring a traditional closed-neck shirt and tapered trousers, representing our cultural identity and pride.</p>
+                        <div class="product-price">NPR 8,500</div>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="product-card">
+                    <a href="clothing.html#gunyo" class="product-link">
+                    <div class="product-image" style="height: fit-content;">
+                        <img src="gunyo.webp" alt="Traditional Gunyu Cholo" style="height: 370px;" />
+                    </div>
+                    <div class="product-info">
+                        <h3>Gunyu Cholo</h3>
+                        <p>Elegant traditional women's attire consisting of a sari-like garment and fitted blouse, showcasing the grace of Nepalese femininity.</p>
+                        <div class="product-price">NPR 12,000</div>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="product-card">
+                    <a href="clothing.html#special" class="product-link">
+                    <div class="product-image" style="height: 370px;">
+                        <img src="kurta.jpg" alt="Nepalese Traditional Shawl" />
+                    </div>
+                    <div class="product-info">
+                        <h3> Chicken kari kurta set</h3>
+                        <p>special kurta made for special occasions and people with beautiful design</p>
+                        <div class="product-price">NPR 4,500</div>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="product-card">
+                    <a href="clothing.html#Pasni" class="product-link">
+                    <div class="product-image">
+                        <img src="pasni.jpg" alt="Traditional Nepalese Vest" />
+                    </div>
+                    <div class="product-info">
+                        <h3>Pasni clothes</h3>
+                        <p>Traditional attire for pasni ceremony of kids </p>
+                        <div class="product-price">NPR 6,800</div>
+                    </div>
+                    </a>
+                </div>
+                <div class="product-card">
+                    <a href="clothing.html#newar" class="product-link">
+                    <div class="product-image">
+                        <img src="C:\xampp\htdocs\website\images\k2.jpg" alt="Traditional Nepalese Vest" style="height: max-content;" />
+                    </div>
+                    <div class="product-info">
+                        <h3>krishna and radha sets</h3>
+                        <p>Traditional  krishna and radha dress especially for krishna janmastami</p>
+                        <div class="product-price">NPR 6,800</div>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Traditional Clothing Section -->
+    <section id="otheritems" class="products-section clothing-section">
+        <div class="container">
+            <h2 class="section-title">Other Collections</h2>
+            <p class="section-subtitle">Authentic Nepalese items celebrating our rich cultural heritage</p>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <a href="collection.html" class="product-link">
+                    <div class="product-image" style="height: fit-content;width: fit-content;">
+                        <img src="kokoko.jpg" alt="Traditional Daura Suruwal" />
+                    </div>
+                    <div class="product-info">
+                        <h3>Subha annaprasan board</h3>
+                        <p>readymade board of good quality to use for annaprasan ceremony. It can be customixable as well according to your wish </p>
+                        <div class="product-price">NPR 1100</div>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="product-card">
+                    <a href="collection.html" class="product-link">
+                    <div class="product-image" style="height: auto;">
+                        <img src="sano thaili.jpg" alt="Traditional Gunyu Cholo" />
+                    </div>
+                    <div class="product-info">
+                        <h3>surke thaili </h3>
+                        <p>traditional small bag used to store money or other valueable while travelling</p>
+                        <div class="product-price">NPR 150 per piece</div>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="product-card">
+                    <a href="collection.html" class="product-link">
+                    <div class="product-image" style="height:400px;">
+                        <img src="matka.jpg" alt="Nepalese Traditional Shawl" />
+                    </div>
+                    <div class="product-info">
+                        <h3>Matka</h3>
+                        <p>Designed matka that fits with krishna set during janmastami.</p>
+                        <div class="product-price">NPR 4,500</div>
+                    </div>
+                    </a>
+                </div>
+                
+                <div class="product-card">
+                    <a href="collection.html" class="product-link">
+                    <div class="product-image">
+                        <img src="mala.jpg" alt="Traditional Nepalese Vest" />
+                    </div>
+                    <div class="product-info">
+                        <h3>Mala</h3>
+                        <p>Different types of mala fit for different dresses are also available</p>
+                        <div class="product-price"></div>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Preserving Nepal's Cultural Heritage</h2>
+                    <p>For over three generations, our family has been dedicated to preserving the rich tradition of Nepalese craftsmanship. Based in the cultural heart of Kathmandu, we work directly with skilled artisans from different parts of the valley to bring you authentic, handcrafted products.</p>
+                    
+                    <p>Every piece in our collection tells a story of Nepal's diverse cultural tapestry. Our traditional slippers are woven using techniques that reflects our distinct culture, while our clothing celebrates the vibrant heritage that makes Nepal unique.</p>
+                    
+                    <p>We are committed to sustainable practices, fair trade, and supporting local communities. When you choose our products, you're not just buying clothing or footwear – you're investing in the preservation of traditional crafts and supporting Nepalese artisans.</p>
+                    
+                    <div class="heritage-features">
+                        <div class="feature">
+                            <h4>Handcrafted Excellence</h4>
+                            <p>Each item is meticulously created by master craftspeople</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Authentic Materials</h4>
+                            <p>Only genuine, locally-sourced materials</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Cultural Heritage</h4>
+                            <p>Designs rooted in centuries-old Nepalese traditions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="https://imgs.search.brave.com/uXWZr9I4c6SzTL3ZzXPtcIseCWbt03iUnb58OrlFl3I/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/c291cmNlbmVwYWwu/Y29tL3dwLWNvbnRl/bnQvdXBsb2Fkcy8y/MDIyLzEyL0d1bnlv/LUNob2xvLURyZXNz/LU5lcGFsLmpwZw" alt="Nepalese Artisan at Work" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 class="section-title">Connect With Us</h2>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-card">
+                        <h3>Visit Our Store</h3>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.3460636218306!2d85.30800907554054!3d27.706599476183023!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb18ff0d2bba2f%3A0xfdcb522760296bf9!2sGautam%20Lady%20Shoes!5e0!3m2!1sen!2snp!4v1757354626389!5m2!1sen!2snp" width="500" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <p>Machindranath, Kathmandu<br>
+                        Nepal 44600</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h3>Get In Touch</h3>
+                        <div style="display: flex;">
+                        <p><span class="label">Phone:</span></p>
+                        <a href="tel:+9779851223726"> +977 9851223736</a>
+                        </div>
+                        <p>
+                        Email: bharatgautam@gmail.com</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h3>Store Hours</h3>
+                        <p>Anyday between 7AM-8PM</p>
+                    </div>
+                </div>
+                
+                <div class="contact-map">
+                    <div class="map-placeholder">
+                        <h4>Find Us in Machindranath</h4>
+                        <p>Located in the heart of Kathmandu's cultural district, surrounded by traditional shops and authentic Nepalese atmosphere.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Gautam Lady Shoes</h3>
+                    <p>Preserving Nepal's traditional craftsmanship for future generations.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="slippers.html">Traditional Slippers</a></li>
+                        <li><a href="clothing.html">Traditional Clothing</a></li>
+                        <li><a href="#about">Our Heritage</a></li>
+                        <li><a href="#contact">Contact Us</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Follow Our Journey</h4>
+                    <p>Stay connected with our latest collections and stories from Nepal's artisan communities.</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Gautam Lady Shoes. All rights reserved. | Crafted with love in Nepal</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Enhanced bidirectional scroll animation system
+        const observerOptions = {
+            threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+            rootMargin: '0px 0px 0px 0px'
+        };
+        
+        let lastScrollY = window.scrollY;
+        let scrollDirection = 'down';
+        
+        // Track scroll direction
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+            lastScrollY = currentScrollY;
+        });
+        
+        // Enhanced intersection observer for bidirectional animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const element = entry.target;
+                const ratio = entry.intersectionRatio;
+                
+                // Add scroll-animate class if not present
+                if (!element.classList.contains('scroll-animate')) {
+                    element.classList.add('scroll-animate');
+                }
+                
+                // Remove all animation classes first
+                element.classList.remove('fade-in-up', 'fade-out-down', 'fade-in-down', 'fade-out-up');
+                
+                if (entry.isIntersecting) {
+                    // Element is visible
+                    element.classList.add('animate');
+                    
+                    if (scrollDirection === 'down') {
+                        element.classList.add('fade-in-up');
+                    } else {
+                        element.classList.add('fade-in-down');
+                    }
+                } else {
+                    // Element is not visible
+                    if (ratio === 0) {
+                        if (scrollDirection === 'down') {
+                            element.classList.add('fade-out-up');
+                        } else {
+                            element.classList.add('fade-out-down');
+                        }
+                    }
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all animatable elements
+        document.querySelectorAll('.products-section, .about-section, .contact-section, .product-card, .section-title, .contact-card, .feature, .about-image, .about-text').forEach(section => {
+            observer.observe(section);
+        });
+        
+        // Enhanced product cards animation with stagger effect
+        const productCards = document.querySelectorAll('.product-card');
+        const productObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                const element = entry.target;
+                
+                if (!element.classList.contains('scroll-animate')) {
+                    element.classList.add('scroll-animate');
+                }
+                
+                element.classList.remove('fade-in-up', 'fade-out-down', 'fade-in-down', 'fade-out-up');
+                
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        if (scrollDirection === 'down') {
+                            element.classList.add('fade-in-up');
+                        } else {
+                            element.classList.add('fade-in-down');
+                        }
+                    }, index * 100); // Stagger effect
+                } else {
+                    if (scrollDirection === 'down') {
+                        element.classList.add('fade-out-up');
+                    } else {
+                        element.classList.add('fade-out-down');
+                    }
+                }
+            });
+        }, {
+            threshold: [0, 0.3, 0.7, 1],
+            rootMargin: '50px 0px -50px 0px'
+        });
+        
+        productCards.forEach(card => {
+            productObserver.observe(card);
+        });
+        
+        // Navbar animation on scroll
+        const navbar = document.querySelector('.navbar');
+        let lastNavScrollY = window.scrollY;
+        
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            
+            if (currentScrollY > lastNavScrollY && currentScrollY > 100) {
+                // Scrolling down - hide navbar
+                navbar.style.transform = 'translateY(-100%)';
+            } else {
+                // Scrolling up - show navbar
+                navbar.style.transform = 'translateY(0)';
+            }
+            
+            // Add background blur when scrolled
+            if (currentScrollY > 50) {
+                navbar.style.background = 'rgba(139, 0, 0, 0.98)';
+                navbar.style.backdropFilter = 'blur(15px)';
+            } else {
+                navbar.style.background = 'rgba(139, 0, 0, 0.95)';
+                navbar.style.backdropFilter = 'blur(10px)';
+            }
+            
+            lastNavScrollY = currentScrollY;
+        });
+        
+        // Image loading animation
+        document.querySelectorAll('img').forEach(img => {
+            if (img.complete) {
+                img.classList.add('loaded');
+            } else {
+                img.addEventListener('load', () => {
+                    img.classList.add('loaded');
+                });
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Parallax effect for hero section
+        const hero = document.querySelector('.hero');
+        const heroContent = document.querySelector('.hero-content');
+        const heroImage = document.querySelector('.hero-image');
+        
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxSpeed = 0.5;
+            
+            if (hero && scrolled < hero.offsetHeight) {
+                heroContent.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
+                heroImage.style.transform = `translateY(${scrolled * parallaxSpeed * 0.3}px)`;
+            }
+        });
+        
+        // Add loading animation to the page
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

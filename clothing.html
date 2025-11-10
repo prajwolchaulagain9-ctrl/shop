@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traditional Clothing - Gautam Lady Shoes</title>
+    <link rel="shortcut icon" href="logo.jpg">
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="new.css">
+    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+     <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Welcome Back</h2>
+                <button class="close-btn" onclick="closeLoginModal()">&times;</button>
+            </div>
+            
+            <div class="modal-content">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="showLogin()">Login</button>
+                    <button class="tab-btn" onclick="showRegister()">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <div class="auth-form" id="loginForm">
+                    <form action="login.php" method="POST" id="loginFormSubmit">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                            <span class="error-message" id="emailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="password-input">
+                                <input type="password" id="password" name="password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                                    <span id="toggleIcon1">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="passwordError"></span>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="remember" id="remember">
+                                <span class="checkmark"></span>
+                                Remember me
+                            </label>
+                            <a href="#" class="forgot-link">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Sign In</button>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div class="auth-form hidden" id="registerForm">
+                    <form action="register.php" method="POST" id="registerFormSubmit">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="first_name" required>
+                                <span class="error-message" id="firstNameError"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="last_name" required>
+                                <span class="error-message" id="lastNameError"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regEmail">Email Address</label>
+                            <input type="email" id="regEmail" name="email" required>
+                            <span class="error-message" id="regEmailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+977-9851234567">
+                            <span class="error-message" id="phoneError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regPassword">Password</label>
+                            <div class="password-input">
+                                <input type="password" id="regPassword" name="password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('regPassword')">
+                                    <span id="toggleIcon2">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="regPasswordError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="password-input">
+                                <input type="password" id="confirmPassword" name="confirm_password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
+                                    <span id="toggleIcon3">👁️</span>
+                                </button>
+                            </div>
+                            <span class="error-message" id="confirmPasswordError"></span>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" name="terms" id="terms" required>
+                                <span class="checkmark"></span>
+                                I agree to the <a href="#" style="color: #8B0000;">Terms & Conditions</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Create Account</button>
+                    </form>
+                </div>
+
+                <div class="divider">
+                    <span>or</span>
+                </div>
+
+                <div class="social-login">
+                    <button type="button" class="social-btn google-btn">
+                        <span class="social-icon">🔍</span>
+                        Continue with Google
+                    </button>
+                    <button type="button" class="social-btn facebook-btn">
+                        <span class="social-icon">📘</span>
+                        Continue with Facebook
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div class="message-container" id="messageContainer" style="display: none;">
+        <div class="message" id="message"></div>
+    </div>
+
+   
+    <script>
+        // Modal Functions
+        function openLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Tab Functions
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.remove('active');
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.querySelectorAll('.tab-btn')[0].classList.remove('active');
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        }
+
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            let toggleIcon;
+            
+            if (fieldId === 'password') toggleIcon = document.getElementById('toggleIcon1');
+            else if (fieldId === 'regPassword') toggleIcon = document.getElementById('toggleIcon2');
+            else if (fieldId === 'confirmPassword') toggleIcon = document.getElementById('toggleIcon3');
+            
+            if (passwordInput && passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                if (toggleIcon) toggleIcon.textContent = '🙈';
+            } else {
+                if (passwordInput) passwordInput.type = 'password';
+                if (toggleIcon) toggleIcon.textContent = '👁️';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('loginModal');
+            if (e.target === modal) {
+                closeLoginModal();
+            }
+        });
+
+        // Login form validation
+        document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Clear previous errors
+            document.getElementById('emailError').textContent = '';
+            document.getElementById('passwordError').textContent = '';
+            
+            let isValid = true;
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('emailError').textContent = 'Please enter a valid email address';
+                isValid = false;
+            }
+            
+            // Password validation
+            if (password.length < 6) {
+                document.getElementById('passwordError').textContent = 'Password must be at least 6 characters long';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Submit form via AJAX
+                const formData = new FormData(this);
+                
+                fetch('login.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showMessage(data.message, data.success ? 'success' : 'error');
+                    
+                    if (data.success) {
+                        setTimeout(() => {
+                            closeLoginModal();
+                            showMessage('Login successful! Welcome back.', 'success');
+                            // Optionally reload page or update UI
+                            // window.location.reload();
+                        }, 1500);
+                    }
+                })
+                .catch(error => {
+                    showMessage('An error occurred. Please try again.', 'error');
+                });
+            }
+        });
+
+        // Register form validation
+        document.getElementById('registerFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            
+            let isValid = true;
+            
+            // Name validation
+            if (firstName.length < 2) {
+                document.getElementById('firstNameError').textContent = 'First name must be at least 2 characters';
+                isValid = false;
+            }
+            
+            if (lastName.length < 2) {
+                document.getElementById('lastNameError').textContent = 'Last name must be at least 2 characters';
+                isValid = false;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('regEmailError').textContent = 'Please enter a valid email address';
+                isValid = false;
+            }
+            
+            // Phone validation (optional but if provided, should be valid)
+            if (phone && !/^(\+977-?)?[0-9]{10}$/.test(phone.replace(/\s/g, ''))) {
+                document.getElementById('phoneError').textContent = 'Please enter a valid phone number';
+                isValid = false;
+            }
+            
+            // Password validation
+            if (password.length < 6) {
+                document.getElementById('regPasswordError').textContent = 'Password must be at least 6 characters long';
+                isValid = false;
+            }
+            
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                isValid = false;
+            }
+            
+            if (!terms) {
+                showMessage('Please accept the Terms & Conditions', 'error');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Submit form via AJAX
+                const formData = new FormData(this);
+                
+                fetch('register.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showMessage(data.message, data.success ? 'success' : 'error');
+                    
+                    if (data.success) {
+                        setTimeout(() => {
+                            showLogin(); // Switch to login tab
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    showMessage('An error occurred. Please try again.', 'error');
+                });
+            }
+        });
+
+        // Show message function
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageElement = document.getElementById('message');
+            
+            messageElement.textContent = message;
+            messageElement.className = `message ${type}`;
+            messageContainer.style.display = 'block';
+            
+            setTimeout(() => {
+                messageContainer.style.display = 'none';
+            }, 5000);
+        }
+
+        // Social login handlers
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.google-btn')) {
+            showMessage('Google login integration coming soon!', 'info');
+            }
+            if (e.target.closest('.facebook-btn')) {
+            showMessage('Facebook login integration coming soon!', 'info');
+            }
+        });
+    </script>
+    <script src="sidebar.js"></script>
+<!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <h2>Gautam Lady Shoes</h2>
+            </div>
+            <button class="close-btn" id="closeSidebar">
+                <span>&times;</span>
+            </button>
+        </div>
+
+        <div class="sidebar-content">
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="juttapasal.html" class="menu-link active">
+                        <span class="menu-icon">🏠</span>
+                        <span class="menu-text">Home</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="" class="menu-link">
+                        <span class="menu-icon">👡</span>
+                        <span class="menu-text">slippers</span>
+                        <span class="menu-arrow">▼</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="slippers.html#block-heel-section" class="submenu-link">
+                                <span class="submenu-text">Block Heel Slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="slippers.html#flat-slippers-section" class="submenu-link">
+                                <span class="submenu-text">Flat Slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="slippers.html#medium-heel-section" class="submenu-link">
+                                <span class="submenu-text">medium heel slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="slippers.html#small-heel-section" class="submenu-link">
+                                <span class="submenu-text">small heel slippers</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <a href="" class="menu-link">
+                        <span class="menu-icon">👗</span>
+                        <span class="menu-text">Clothing</span>
+                        <span class="menu-arrow">▼</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="clothing.html#newar" class="submenu-link">
+                                <span class="submenu-text">Krishna and radha dress </span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="clothing.html#Pasni" class="submenu-link">
+                                <span class="submenu-text">Pasni</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="clothing.html#Daura" class="submenu-link">
+                                <span class="submenu-text">Daura Suruwal</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="clothing.html#sada" class="submenu-link">
+                                <span class="submenu-text">Plain kurta</span>
+                            </a>
+                        </li>
+                         <li class="submenu-item">
+                            <a href="clothing.html#special" class="submenu-link">
+                                <span class="submenu-text">Chicken kadai kurta</span>
+                            </a>
+                        </li>
+                         <li class="submenu-item">
+                            <a href="clothing.html#gunyo" class="submenu-link">
+                                <span class="submenu-text">Gunyu Choli and girls kurta</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <a href="collection.html" class="menu-link">
+                        <span class="menu-icon">✨</span>
+                        <span class="menu-text">Collections</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#About" class="menu-link">
+                        <span class="menu-icon">ℹ️</span>
+                        <span class="menu-text">About</span>
+                    </a>
+                </li>
+
+                <li class="menu-item">
+                    <a href="#contact" class="menu-link">
+                        <span class="menu-icon">📞</span>
+                        <span class="menu-text">Contact</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="team.html" class="menu-link">
+                        <span class="menu-icon">👥</span>
+                        <span class="menu-text">Our Team</span>
+                    </a>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="social-links">
+                    <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">📷</a>
+                    <a href="#" class="social-link">🐦</a>
+                </div>
+                <p class="footer-text">© 2024 Gautam Lady Shoes</p>
+            </div>
+        </div>
+    </nav>
+
+
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h2><a href="juttapasal.html" style="color: #DAA520; text-decoration: none;">Gautam Lady Shoes</a></h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="juttapasal.html">Home</a></li>
+                <li><a href="slippers.html">Slippers</a></li>
+                <li><a href="clothing.html">Clothing</a></li>
+                <li><a href="collection.html">other collection</a></li>
+                <li><a href="juttapasal.html#about">About</a></li>
+                <li><a href="juttapasal.html#contact">Contact</a></li>
+                 <li><a href="team.html">Our team</a></li>
+                 <li><button class="login-btn-nav" onclick="openLoginModal()">Login</button></li>
+               
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" style="margin-top: 80px; min-height: 60vh;">
+        <div class="hero-content" style="text-align: center; max-width: 800px; margin: 0 auto;">
+            <h1 style="color: aliceblue;">Traditional Nepalese Clothing</h1>
+            <p style="color: antiquewhite;">Celebrate Nepal's rich cultural heritage with our authentic traditional garments, handcrafted by skilled artisans</p>
+            <a href="#contact" class="cta-button">Contact Us for Orders</a>
+        </div>
+    </section>
+
+    <!-- Krishna and radha set -->
+    <section class="category-section" id="newar">
+        <div class="container">
+            <h2 class="category-title">Krishna and radha set</h2>
+            <p class="category-subtitle">Traditional krishna and radha dress for krishna janmastami</p>
+            
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\k1.jpg" alt="Traditional Newari Sari"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Krishna set</h4>
+                        
+                        <div class="category-card-price">NPR 1600</div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\k2.jpg" alt="Newari Haku Patasi"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Krishna set</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\k3.jpg" alt="Newari Cholo"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Krishna set</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\k4.jpg" alt="Newari Wedding Dress"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Krishna set</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\k5.jpg" alt="Newari Festival Dress"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Krishna set</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\r1.jpg" alt="Newari Gunyu"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Radha set</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\r2.jpg" alt="Newari Ceremonial Dress"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Radha set</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\r3.jpg" alt="Newari Traditional Shawl"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Radha set</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\r4.jpg" alt="Newari Dance Costume"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Radha set</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\images\r5.jpg" alt="Newari Casual Wear"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Radha set</h4>
+                      
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pasni Clothes -->
+    <section class="category-section" id="Pasni">
+        <div class="container">
+            <h2 class="category-title">Pasni Clothes for girls and boys</h2>
+            <p class="category-subtitle">Special attire for the sacred rice feeding ceremony</p>
+            
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-card-image" style="height: auto;">
+                        <img src="g1.jpg" alt="Baby Pasni Dress"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Girls Pasni</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image" >
+                        <img src="g2.jpg" alt="Pasni Ceremony Set"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Girls pasni</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="g3.jpg" alt="Golden Pasni Outfit"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>girls pasni</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="g4.jpg" alt="Traditional Pasni Dhoti"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Girls Pasni</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="5d68cbb0-e77c-4b9d-90b3-cb563c362731.jpg" alt="Pasni Lehenga"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Pasni Lehenga</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="g5.jpg" alt="Silk Pasni Dress"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Silk Pasni Dress</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="g6.jpg" alt="Embroidered Pasni Outfit"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Boys pasni</h4>
+                      
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="g7.jpg" alt="Velvet Pasni Dress"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Velvet Pasni Dress boys</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="g8.jpg" alt="Designer Pasni Set"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Designer Pasni Set</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="g9.jpg" alt="Complete Pasni Package"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Complete Pasni Package</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Daura Suruwal -->
+    <section class="category-section" id="Daura">
+        <div class="container">
+            <h2 class="category-title">Daura Suruwal</h2>
+            <p class="category-subtitle">Nepal's national dress representing cultural identity</p>
+            
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="https://imgs.search.brave.com/_ljWL7VJjt-DRopXT_QTOanljd-102zQ-dcdTCVFosU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9ib3V0/aXF1ZW5lcGFsLmNv/bS5hdS9jZG4vc2hv/cC9maWxlcy9kYXVy/YS1zdXJ1d2FsLWFu/ZC10b3BpLXNldC1p/bi1nb2xkLWJvdXRp/cXVlLW5lcGFsLnBu/Zz9jcm9wPXJlZ2lv/biZjcm9wX2hlaWdo/dD05NjAmY3JvcF9s/ZWZ0PTM4JmNyb3Bf/dG9wPTAmY3JvcF93/aWR0aD02NDMmdj0x/NzQyODk2MzQzJndp/ZHRoPTcyMA" alt="Classic Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Classic Daura Suruwal</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\more imGE\d1.jpg" alt="Wedding Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4> Daura Suruwal</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="https://imgs.search.brave.com/3-rrvuGn4ECr9NOqi7X-HYHxmJ_huRcCOhZTUCju3-4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmV0/c3lzdGF0aWMuY29t/LzQ5ODU4MTM4L3Iv/aWwvM2MzZGVlLzU5/OTI3MjAyNTIvaWxf/Nzk0eE4uNTk5Mjcy/MDI1Ml83MzR6Lmpw/Zw" alt="Festival Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>wedding Daura Suruwal</h4>
+                      
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="https://imgs.search.brave.com/B1nUoSC_zsl71kzXuCUMQsraoCOXXGDqHUjlA6nZlyA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmV0/c3lzdGF0aWMuY29t/LzQ5ODU4MTM4L3Iv/aWwvMzNkNGVkLzYw/NDA3ODk4ODEvaWxf/Nzk0eE4uNjA0MDc4/OTg4MV83eWR0Lmpw/Zw" alt="Silk Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Silk Daura Suruwal</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\more imGE\il_794xN.5992719450_ajen.webp" alt="Cotton Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Cotton Daura Suruwal</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\more imGE\d4.webp" alt="Dhaka Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Dhaka Daura Suruwal</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\more imGE\Dawra_Sural_2.webp" alt="Ceremonial Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Ceremonial Daura Suruwal</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\more imGE\il_794xN.5403845266_lwm3.webp" alt="Modern Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Modern Daura Suruwal</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="more imGE\90.jpg" alt="Linen Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Linen Daura Suruwal</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\more imGE\6db383c9fe6b5bd492fd44ac3d75d099.webp" alt="Premium Daura Suruwal"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Premium Daura Suruwal</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kurta Set Plain -->
+    <section class="category-section" id="sada">
+        <div class="container">
+            <h2 class="category-title">Kurta Set Plain</h2>
+            <p class="category-subtitle">Simple and elegant kurta sets for everyday wear</p>
+            
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\1st.png" alt="White Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Purple Plain Kurta</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\2nd.png" alt="Blue Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Yellow Plain Kurta</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\3rd.jpg" alt="Cream Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Blue Plain Kurta</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\4th.jpg" alt="Black Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>kids Yellow Plain Kurta</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\5th.jpg" alt="Grey Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>red Plain Kurta</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\6th.jpg" alt="Maroon Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Blue Plain Kurta</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\7th.jpg" alt="Green Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Maroon Plain Kurta</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\9th.jpg" alt="Orange Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>kids Yellow Plain Kurta</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\10th.jpg" alt="Pink Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>kids green  Plain Kurta</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\kurta'\61bacbcb-d200-4d6a-acfe-1b6f7e2fda0a.jpg" alt="Premium Plain Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>kids collection</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kurta Set Chicken Kadai -->
+    <section class="category-section" id="special">
+        <div class="container">
+            <h2 class="category-title">Kurta Set Chicken Kari</h2>
+            <p class="category-subtitle">Intricate chicken kadai embroidery work on premium kurta sets</p>
+            
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\10_8c0b5252-babf-4461-b97c-4a876f0aba7f_540x.webp" alt="White Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>maroon Chicken Kari Kurta</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\w1.webp" alt="Blue Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Black Chicken Kari Kurta</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\w2.webp" alt="Cream Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>green Chicken Kari Kurta</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\w3.webp" alt="Maroon Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Blue Chicken Kari Kurta</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\w4.webp" alt="Black Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>White Chicken Kari Kurta</h4>
+
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\w5.webp" alt="Green Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Cream Chicken Kari Kurta</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\w6.webp" alt="Orange Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Purple Chicken Kari Kurta</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\w8.webp" alt="Golden Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Pink Chicken Kari Kurta</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\w9.jpg" alt="Silver Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>kurta collection</h4>
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\special kurta\w10.jpg" alt="Premium Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Kurta collection</h4>
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Gunyo Choli -->
+    <section class="category-section" id="gunyo">
+        <div class="container">
+            <h2 class="category-title">Gunyu Choli and Girls Kurta</h2>
+            <p class="category-subtitle">reflection of nepalese culture with gunyo choli</p>
+            
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m1.webp" alt="White Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m2.webp" alt="Blue Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m3.webp" alt="Cream Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                       
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m4.webp" alt="Maroon Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m5.webp" alt="Black Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        
+                        <div class="category-card-price"></div>
+                    </div>
+                </div>
+                
+                <!-- <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="https://images.pexels.com/photos/1049317/pexels-photo-1049317.jpeg" alt="Green Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Green Chicken Kadai Kurta</h4>
+                        <p>Fresh green kurta with traditional chicken kadai patterns, perfect for festivals.</p>
+                        <div class="category-card-price">NPR 8,800</div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="https://images.pexels.com/photos/8460157/pexels-photo-8460157.jpeg" alt="Orange Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Orange Chicken Kadai Kurta</h4>
+                        <p>Vibrant orange kurta with intricate chicken kadai work, ideal for cultural celebrations.</p>
+                        <div class="category-card-price">NPR 9,200</div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="https://images.pexels.com/photos/5704721/pexels-photo-5704721.jpeg" alt="Golden Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Golden Chicken Kadai Kurta</h4>
+                        <p>Luxurious golden kurta with elaborate chicken kadai embroidery for special occasions.</p>
+                        <div class="category-card-price">NPR 12,500</div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="https://images.pexels.com/photos/1049317/pexels-photo-1049317.jpeg" alt="Silver Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Silver Chicken Kadai Kurta</h4>
+                        <p>Elegant silver kurta with detailed chicken kadai work, perfect for formal gatherings.</p>
+                        <div class="category-card-price">NPR 11,800</div>
+                    </div>
+                </div>
+                
+                <div class="category-card">
+                    <div class="category-card-image">
+                        <img src="https://images.pexels.com/photos/8460157/pexels-photo-8460157.jpeg" alt="Premium Chicken Kadai Kurta"/>
+                    </div>
+                    <div class="category-card-info">
+                        <h4>Premium Chicken Kadai Kurta</h4>
+                        <p>High-end kurta with masterful chicken kadai embroidery, showcasing finest craftsmanship.</p>
+                        <div class="category-card-price">NPR 15,000</div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="about-section" id="About">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Authentic Nepalese Garments</h2>
+                    <p>Our traditional clothing collection represents the rich cultural diversity of Nepal, with each piece telling a unique story of our heritage.</p>
+                    
+                    <div class="heritage-features">
+                        <div class="feature">
+                            <h4>Cultural Authenticity</h4>
+                            <p>Designs rooted in centuries-old Nepalese traditions and customs</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Premium Materials</h4>
+                            <p>Made with finest fabrics and materials sourced locally</p>
+                        </div>
+                        <div class="feature">
+                            <h4>Master Craftsmanship</h4>
+                            <p>Created by skilled artisans with generations of expertise</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.pexels.com/photos/5704721/pexels-photo-5704721.jpeg" alt="Traditional Nepalese Clothing" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Gautam Lady Shoes</h3>
+                    <p>Preserving Nepal's traditional craftsmanship for future generations.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact Info</h4>
+                    <div style="display: flex;">
+                        <p>Phone: . </p>
+                        <a href="tel:+9779851223736"> +977 9851223736</a>
+                    </div>
+                    <p>
+                    Email: bharatgautam@gmail.com<br>
+                    Location: Machindranath, Kathmandu</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Store Hours</h4>
+                    <p>Anyday between 7AM-8PM</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Gautam Lady Shoes. All rights reserved. | Crafted with love in Nepal</p>
+            </div>
+        </div>
+    </footer>
+     <script>
+        // Enhanced bidirectional scroll animation system
+        const observerOptions = {
+            threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+            rootMargin: '0px 0px 0px 0px'
+        };
+        
+        let lastScrollY = window.scrollY;
+        let scrollDirection = 'down';
+        
+        // Track scroll direction
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+            lastScrollY = currentScrollY;
+        });
+        
+        // Enhanced intersection observer for bidirectional animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const element = entry.target;
+                const ratio = entry.intersectionRatio;
+                
+                // Add scroll-animate class if not present
+                if (!element.classList.contains('scroll-animate')) {
+                    element.classList.add('scroll-animate');
+                }
+                
+                // Remove all animation classes first
+                element.classList.remove('fade-in-up', 'fade-out-down', 'fade-in-down', 'fade-out-up');
+                
+                if (entry.isIntersecting) {
+                    // Element is visible
+                    element.classList.add('animate');
+                    
+                    if (scrollDirection === 'down') {
+                        element.classList.add('fade-in-up');
+                    } else {
+                        element.classList.add('fade-in-down');
+                    }
+                } else {
+                    // Element is not visible
+                    if (ratio === 0) {
+                        if (scrollDirection === 'down') {
+                            element.classList.add('fade-out-up');
+                        } else {
+                            element.classList.add('fade-out-down');
+                        }
+                    }
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all animatable elements
+        document.querySelectorAll('.products-section, .about-section, .contact-section, .product-card, .section-title, .contact-card, .feature, .about-image, .about-text').forEach(section => {
+            observer.observe(section);
+        });
+        
+        // Enhanced product cards animation with stagger effect
+        const productCards = document.querySelectorAll('.product-card');
+        const productObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                const element = entry.target;
+                
+                if (!element.classList.contains('scroll-animate')) {
+                    element.classList.add('scroll-animate');
+                }
+                
+                element.classList.remove('fade-in-up', 'fade-out-down', 'fade-in-down', 'fade-out-up');
+                
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        if (scrollDirection === 'down') {
+                            element.classList.add('fade-in-up');
+                        } else {
+                            element.classList.add('fade-in-down');
+                        }
+                    }, index * 100); // Stagger effect
+                } else {
+                    if (scrollDirection === 'down') {
+                        element.classList.add('fade-out-up');
+                    } else {
+                        element.classList.add('fade-out-down');
+                    }
+                }
+            });
+        }, {
+            threshold: [0, 0.3, 0.7, 1],
+            rootMargin: '50px 0px -50px 0px'
+        });
+        
+        productCards.forEach(card => {
+            productObserver.observe(card);
+        });
+        
+        // Navbar animation on scroll
+        const navbar = document.querySelector('.navbar');
+        let lastNavScrollY = window.scrollY;
+        
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            
+            if (currentScrollY > lastNavScrollY && currentScrollY > 100) {
+                // Scrolling down - hide navbar
+                navbar.style.transform = 'translateY(-100%)';
+            } else {
+                // Scrolling up - show navbar
+                navbar.style.transform = 'translateY(0)';
+            }
+            
+            // Add background blur when scrolled
+            if (currentScrollY > 50) {
+                navbar.style.background = 'rgba(139, 0, 0, 0.98)';
+                navbar.style.backdropFilter = 'blur(15px)';
+            } else {
+                navbar.style.background = 'rgba(139, 0, 0, 0.95)';
+                navbar.style.backdropFilter = 'blur(10px)';
+            }
+            
+            lastNavScrollY = currentScrollY;
+        });
+        
+        // Image loading animation
+        document.querySelectorAll('img').forEach(img => {
+            if (img.complete) {
+                img.classList.add('loaded');
+            } else {
+                img.addEventListener('load', () => {
+                    img.classList.add('loaded');
+                });
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Parallax effect for hero section
+        const hero = document.querySelector('.hero');
+        const heroContent = document.querySelector('.hero-content');
+        const heroImage = document.querySelector('.hero-image');
+        
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxSpeed = 0.5;
+            
+            if (hero && scrolled < hero.offsetHeight) {
+                heroContent.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
+                heroImage.style.transform = `translateY(${scrolled * parallaxSpeed * 0.3}px)`;
+            }
+        });
+        
+        // Add loading animation to the page
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

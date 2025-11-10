@@ -1,0 +1,117 @@
+ <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <h2>Gautam Lady Shoes</h2>
+            </div>
+            <button class="close-btn" id="closeSidebar">
+                <span>&times;</span>
+            </button>
+        </div>
+
+        <div class="sidebar-content">
+            <ul class="sidebar-menu">
+                <li class="menu-item">
+                    <a href="juttapasal.html" class="menu-link active">
+                        <span class="menu-icon">🏠</span>
+                        <span class="menu-text">Home</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="" class="menu-link">
+                        <span class="menu-icon">👡</span>
+                        <span class="menu-text">Slippers</span>
+                        <span class="menu-arrow">▼</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="slippers.html#block-heel-section" class="submenu-link">
+                                <span class="submenu-text">Casual Slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="#formal-slippers" class="submenu-link">
+                                <span class="submenu-text">Formal Slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="#designer-slippers" class="submenu-link">
+                                <span class="submenu-text">Designer Slippers</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="#comfort-slippers" class="submenu-link">
+                                <span class="submenu-text">Comfort Slippers</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <a href="#clothing" class="menu-link">
+                        <span class="menu-icon">👗</span>
+                        <span class="menu-text">Clothing</span>
+                        <span class="menu-arrow">▼</span>
+                    </a>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="#dresses" class="submenu-link">
+                                <span class="submenu-text">Dresses</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="#tops-blouses" class="submenu-link">
+                                <span class="submenu-text">Tops & Blouses</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="#ethnic-wear" class="submenu-link">
+                                <span class="submenu-text">Ethnic Wear</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="#accessories" class="submenu-link">
+                                <span class="submenu-text">Accessories</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <a href="#collections" class="menu-link">
+                        <span class="menu-icon">✨</span>
+                        <span class="menu-text">Collections</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#about" class="menu-link">
+                        <span class="menu-icon">ℹ️</span>
+                        <span class="menu-text">About</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="#contact" class="menu-link">
+                        <span class="menu-icon">📞</span>
+                        <span class="menu-text">Contact</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="social-links">
+                    <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">📷</a>
+                    <a href="#" class="social-link">🐦</a>
+                </div>
+                <p class="footer-text">© 2024 Gautam Lady Shoes</p>
+            </div>
+        </div>
+    </nav>
