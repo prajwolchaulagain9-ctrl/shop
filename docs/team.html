@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Meet our team - Gautam Lady Shoes artisans and craftspeople">
+    <meta name="theme-color" content="#8B0000">
     <title>Our Team - Gautam Lady Shoes</title>
     <link rel="shortcut icon" href="logo.jpg">
     <link rel="stylesheet" href="new.css">
@@ -81,11 +83,7 @@
                             <span class="error-message" id="regEmailError"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" placeholder="+977-9851234567">
-                            <span class="error-message" id="phoneError"></span>
-                        </div>
+                        
 
                         <div class="form-group">
                             <label for="regPassword">Password</label>
@@ -230,6 +228,9 @@
                 
                 fetch('login.php', {
                     method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: formData
                 })
                 .then(response => response.json())
@@ -314,6 +315,9 @@
                 
                 fetch('register.php', {
                     method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: formData
                 })
                 .then(response => response.json())
@@ -358,6 +362,7 @@
     </script>
     
     <script src="sidebar.js"></script>
+    <script src="auth.js"></script>
      <!-- Sidebar Toggle Button -->
     <button class="sidebar-toggle" id="sidebarToggle">
         <span class="hamburger-line"></span>
@@ -507,7 +512,7 @@
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="#contact">contact</a></li>
                 <li><a href="team.html">Our team</a></li>
-                <li><button class="login-btn-nav" onclick="openLoginModal()">Login</button></li>
+                <li id="authBtnContainer"><button class="login-btn-nav" onclick="openLoginModal()">Login</button></li>
             </ul>
         </div>
     </nav>
@@ -785,6 +790,27 @@
                     </div>
                 </div>
                 <div class="team-card">
+                    <div class="team-image">
+                        <img src="cc62f32d-2824-4fad-b326-25aa371828fa.jpg" alt="Anita Karki">
+                        <div class="team-overlay">
+                            <div class="team-social">
+                                <a href="tel:+9779801234567" class="social-link">📞</a>
+                                <a href="mailto:anita@gautamshoes.com" class="social-link">✉️</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="team-info">
+                        <h3 class="team-name">Devi Nagarkoti</h3>
+                        <p class="team-role">Cultural Consultant</p>
+                        <p class="team-intro">Provides expertise on cultural authenticity and traditional significance, ensuring our products honor Nepalese heritage properly.</p>
+                        <div class="team-contact">
+                            <span class="contact-label">Phone:</span>
+                            <a href="tel:+9779801234567" class="contact-link">+977 9801234567</a>
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="team-card">
                     <div class="team-image">
                         <img src="cc62f32d-2824-4fad-b326-25aa371828fa.jpg" alt="Anita Karki">
                         <div class="team-overlay">

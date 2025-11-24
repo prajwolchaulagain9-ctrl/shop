@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Traditional Nepalese clothing - Krishna and Radha sets, Daura Suruwal, Kurta sets, and more handcrafted garments by Gautam Lady Shoes">
+    <meta name="theme-color" content="#8B0000">
     <title>Traditional Clothing - Gautam Lady Shoes</title>
     <link rel="shortcut icon" href="logo.jpg">
-    <link rel="stylesheet" href="">
     <link rel="stylesheet" href="new.css">
     <link rel="stylesheet" href="sidebar.css">
     <link rel="stylesheet" href="login.css">
@@ -81,11 +82,7 @@
                             <span class="error-message" id="regEmailError"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" placeholder="+977-9851234567">
-                            <span class="error-message" id="phoneError"></span>
-                        </div>
+                       
 
                         <div class="form-group">
                             <label for="regPassword">Password</label>
@@ -133,7 +130,7 @@
                     <button type="button" class="social-btn facebook-btn">
                         <span class="social-icon">📘</span>
                         Continue with Facebook
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -225,11 +222,13 @@
             }
             
             if (isValid) {
-                // Submit form via AJAX
                 const formData = new FormData(this);
                 
                 fetch('login.php', {
                     method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: formData
                 })
                 .then(response => response.json())
@@ -240,8 +239,6 @@
                         setTimeout(() => {
                             closeLoginModal();
                             showMessage('Login successful! Welcome back.', 'success');
-                            // Optionally reload page or update UI
-                            // window.location.reload();
                         }, 1500);
                     }
                 })
@@ -309,11 +306,13 @@
             }
             
             if (isValid) {
-                // Submit form via AJAX
                 const formData = new FormData(this);
                 
                 fetch('register.php', {
                     method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: formData
                 })
                 .then(response => response.json())
@@ -322,7 +321,7 @@
                     
                     if (data.success) {
                         setTimeout(() => {
-                            showLogin(); // Switch to login tab
+                            showLogin();
                         }, 2000);
                     }
                 })
@@ -349,15 +348,36 @@
         // Social login handlers
         document.addEventListener('click', function(e) {
             if (e.target.closest('.google-btn')) {
-            showMessage('Google login integration coming soon!', 'info');
+                showMessage('Google login integration coming soon!', 'info');
             }
             if (e.target.closest('.facebook-btn')) {
-            showMessage('Facebook login integration coming soon!', 'info');
+                showMessage('Facebook login integration coming soon!', 'info');
             }
+        });
+
+        // Mobile optimization: Prevent double-tap zoom on buttons
+        document.addEventListener('touchstart', function() {}, { passive: true });
+
+        // Close sidebar when clicking on a link (mobile)
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar a');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (sidebar && sidebar.classList.contains('active')) {
+                        sidebar.classList.remove('active');
+                        if (sidebarToggle) sidebarToggle.classList.remove('active');
+                        document.getElementById('sidebarOverlay').classList.remove('active');
+                    }
+                });
+            });
         });
     </script>
     <script src="sidebar.js"></script>
-<!-- Sidebar Toggle Button -->
+
+    <!-- Sidebar Toggle Button -->
     <button class="sidebar-toggle" id="sidebarToggle">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -442,12 +462,12 @@
                                 <span class="submenu-text">Plain kurta</span>
                             </a>
                         </li>
-                         <li class="submenu-item">
+                        <li class="submenu-item">
                             <a href="clothing.html#special" class="submenu-link">
                                 <span class="submenu-text">Chicken kadai kurta</span>
                             </a>
                         </li>
-                         <li class="submenu-item">
+                        <li class="submenu-item">
                             <a href="clothing.html#gunyo" class="submenu-link">
                                 <span class="submenu-text">Gunyu Choli and girls kurta</span>
                             </a>
@@ -466,7 +486,6 @@
                         <span class="menu-text">About</span>
                     </a>
                 </li>
-
                 <li class="menu-item">
                     <a href="#contact" class="menu-link">
                         <span class="menu-icon">📞</span>
@@ -478,6 +497,7 @@
                         <span class="menu-icon">👥</span>
                         <span class="menu-text">Our Team</span>
                     </a>
+                </li>
             </ul>
 
             <div class="sidebar-footer">
@@ -491,8 +511,6 @@
         </div>
     </nav>
 
-
-    
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -506,9 +524,8 @@
                 <li><a href="collection.html">other collection</a></li>
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
-                 <li><a href="team.html">Our team</a></li>
-                 <li><button class="login-btn-nav" onclick="openLoginModal()">Login</button></li>
-               
+                <li><a href="team.html">Our team</a></li>
+                <li id="authBtnContainer"><button class="login-btn-nav" onclick="openLoginModal()">Login</button></li>
             </ul>
         </div>
     </nav>
@@ -531,230 +548,100 @@
             <div class="category-grid">
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\k1.jpg" alt="Traditional Newari Sari"/>
+                        <img src="../images/k1.jpg" alt="Traditional Newari Sari"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Krishna set</h4>
-                        
                         <div class="category-card-price">NPR 1600</div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\k2.jpg" alt="Newari Haku Patasi"/>
+                        <img src="../images/k2.jpg" alt="Newari Haku Patasi"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Krishna set</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\k3.jpg" alt="Newari Cholo"/>
+                        <img src="../images/k3.jpg" alt="Newari Cholo"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Krishna set</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\k4.jpg" alt="Newari Wedding Dress"/>
+                        <img src="../images/k4.jpg" alt="Newari Wedding Dress"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Krishna set</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\k5.jpg" alt="Newari Festival Dress"/>
+                        <img src="../images/k5.jpg" alt="Newari Festival Dress"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Krishna set</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\r1.jpg" alt="Newari Gunyu"/>
+                        <img src="../images/r1.jpg" alt="Newari Gunyu"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Radha set</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\r2.jpg" alt="Newari Ceremonial Dress"/>
+                        <img src="../images/r2.jpg" alt="Newari Ceremonial Dress"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Radha set</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\r3.jpg" alt="Newari Traditional Shawl"/>
+                        <img src="../images/r3.jpg" alt="Newari Traditional Shawl"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Radha set</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\r4.jpg" alt="Newari Dance Costume"/>
+                        <img src="../images/r4.jpg" alt="Newari Dance Costume"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Radha set</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\images\r5.jpg" alt="Newari Casual Wear"/>
+                        <img src="../images/r5.jpg" alt="Newari Casual Wear"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Radha set</h4>
-                      
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pasni Clothes -->
-    <section class="category-section" id="Pasni">
-        <div class="container">
-            <h2 class="category-title">Pasni Clothes for girls and boys</h2>
-            <p class="category-subtitle">Special attire for the sacred rice feeding ceremony</p>
-            
-            <div class="category-grid">
-                <div class="category-card">
-                    <div class="category-card-image" style="height: auto;">
-                        <img src="g1.jpg" alt="Baby Pasni Dress"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Girls Pasni</h4>
-                        
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image" >
-                        <img src="g2.jpg" alt="Pasni Ceremony Set"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Girls pasni</h4>
-                        
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="g3.jpg" alt="Golden Pasni Outfit"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>girls pasni</h4>
-                        
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="g4.jpg" alt="Traditional Pasni Dhoti"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Girls Pasni</h4>
-                        
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="5d68cbb0-e77c-4b9d-90b3-cb563c362731.jpg" alt="Pasni Lehenga"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Pasni Lehenga</h4>
-                        
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="g5.jpg" alt="Silk Pasni Dress"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Silk Pasni Dress</h4>
-                        
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="g6.jpg" alt="Embroidered Pasni Outfit"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Boys pasni</h4>
-                      
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="g7.jpg" alt="Velvet Pasni Dress"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Velvet Pasni Dress boys</h4>
-                        
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="g8.jpg" alt="Designer Pasni Set"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Designer Pasni Set</h4>
-                        
-                        <div class="category-card-price"></div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="g9.jpg" alt="Complete Pasni Package"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Complete Pasni Package</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
@@ -771,110 +658,100 @@
             <div class="category-grid">
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="https://imgs.search.brave.com/_ljWL7VJjt-DRopXT_QTOanljd-102zQ-dcdTCVFosU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9ib3V0/aXF1ZW5lcGFsLmNv/bS5hdS9jZG4vc2hv/cC9maWxlcy9kYXVy/YS1zdXJ1d2FsLWFu/ZC10b3BpLXNldC1p/bi1nb2xkLWJvdXRp/cXVlLW5lcGFsLnBu/Zz9jcm9wPXJlZ2lv/biZjcm9wX2hlaWdo/dD05NjAmY3JvcF9s/ZWZ0PTM4JmNyb3Bf/dG9wPTAmY3JvcF93/aWR0aD02NDMmdj0x/NzQyODk2MzQzJndp/ZHRoPTcyMA" alt="Classic Daura Suruwal"/>
+                        <img src="https://imgs.search.brave.com/_ljWL7VJjt-DRopXT_QTOanljd-102zQ-dcdTCVFosU/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9ib3V0aXF1ZW5lcGFsLmNvbS5hdS9jZG4vc2hvcC9maWxlcy9kYXVyYS1zdXJ1d2FsLWFuZC10b3BpLXNldC1pbi1nb2xkLWJvdXRpcXVlLW5lcGFsLnBuZz9jcm9wPXJlZ2lvbiZjcm9wX2hlaWdodD05NjAmY3JvcF9sZWZ0PTM4JmNyb3BfdG9wPTAmY3JvcF93aWR0aD02NDMmdj0xNzQyODk2MzQzJndpZHRoPTcyMA" alt="Classic Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Classic Daura Suruwal</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\more imGE\d1.jpg" alt="Wedding Daura Suruwal"/>
+                        <img src="../more imGE/d1.jpg" alt="Wedding Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4> Daura Suruwal</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="https://imgs.search.brave.com/3-rrvuGn4ECr9NOqi7X-HYHxmJ_huRcCOhZTUCju3-4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmV0/c3lzdGF0aWMuY29t/LzQ5ODU4MTM4L3Iv/aWwvM2MzZGVlLzU5/OTI3MjAyNTIvaWxf/Nzk0eE4uNTk5Mjcy/MDI1Ml83MzR6Lmpw/Zw" alt="Festival Daura Suruwal"/>
+                        <img src="https://imgs.search.brave.com/3-rrvuGn4ECr9NOqi7X-HYHxmJ_huRcCOhZTUCju3-4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmV0c3lzdGF0aWMuY29tLzQ5ODU4MTM4L3IvaWwvM2MzZGVlLzU5OTI3MjAyNTIvaWxfNzk0eE4uNTk5MjcyMDI1Ml83MzR6LmpwZw" alt="Festival Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4>wedding Daura Suruwal</h4>
-                      
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="https://imgs.search.brave.com/B1nUoSC_zsl71kzXuCUMQsraoCOXXGDqHUjlA6nZlyA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmV0/c3lzdGF0aWMuY29t/LzQ5ODU4MTM4L3Iv/aWwvMzNkNGVkLzYw/NDA3ODk4ODEvaWxf/Nzk0eE4uNjA0MDc4/OTg4MV83eWR0Lmpw/Zw" alt="Silk Daura Suruwal"/>
+                        <img src="https://imgs.search.brave.com/B1nUoSC_zsl71kzXuCUMQsraoCOXXGDqHUjlA6nZlyA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pLmV0c3lzdGF0aWMuY29tLzQ5ODU4MTM4L3IvaWwvMzNkNGVkLzYwNDA3ODk4ODEvaWxfNzk0eE4uNjA0MDc4OTg4MV83eWR0LmpwZw" alt="Silk Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Silk Daura Suruwal</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\more imGE\il_794xN.5992719450_ajen.webp" alt="Cotton Daura Suruwal"/>
+                        <img src="../more imGE/il_794xN.5992719450_ajen.webp" alt="Cotton Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Cotton Daura Suruwal</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\more imGE\d4.webp" alt="Dhaka Daura Suruwal"/>
+                        <img src="../more imGE/d4.webp" alt="Dhaka Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Dhaka Daura Suruwal</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\more imGE\Dawra_Sural_2.webp" alt="Ceremonial Daura Suruwal"/>
+                        <img src="../more imGE/Dawra_Sural_2.webp" alt="Ceremonial Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Ceremonial Daura Suruwal</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\more imGE\il_794xN.5403845266_lwm3.webp" alt="Modern Daura Suruwal"/>
+                        <img src="../more imGE/il_794xN.5403845266_lwm3.webp" alt="Modern Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Modern Daura Suruwal</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="more imGE\90.jpg" alt="Linen Daura Suruwal"/>
+                        <img src="../more imGE/90.jpg" alt="Linen Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Linen Daura Suruwal</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\more imGE\6db383c9fe6b5bd492fd44ac3d75d099.webp" alt="Premium Daura Suruwal"/>
+                        <img src="../more imGE/6db383c9fe6b5bd492fd44ac3d75d099.webp" alt="Premium Daura Suruwal"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Premium Daura Suruwal</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
@@ -891,110 +768,100 @@
             <div class="category-grid">
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\1st.png" alt="White Plain Kurta"/>
+                        <img src="../kurta'/1st.png" alt="White Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Purple Plain Kurta</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\2nd.png" alt="Blue Plain Kurta"/>
+                        <img src="../kurta'/2nd.png" alt="Blue Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Yellow Plain Kurta</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\3rd.jpg" alt="Cream Plain Kurta"/>
+                        <img src="../kurta'/3rd.jpg" alt="Cream Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Blue Plain Kurta</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\4th.jpg" alt="Black Plain Kurta"/>
+                        <img src="../kurta'/4th.jpg" alt="Black Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>kids Yellow Plain Kurta</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\5th.jpg" alt="Grey Plain Kurta"/>
+                        <img src="../kurta'/5th.jpg" alt="Grey Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>red Plain Kurta</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\6th.jpg" alt="Maroon Plain Kurta"/>
+                        <img src="../kurta'/6th.jpg" alt="Maroon Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Blue Plain Kurta</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\7th.jpg" alt="Green Plain Kurta"/>
+                        <img src="../kurta'/7th.jpg" alt="Green Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Maroon Plain Kurta</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\9th.jpg" alt="Orange Plain Kurta"/>
+                        <img src="../kurta'/9th.jpg" alt="Orange Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>kids Yellow Plain Kurta</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\10th.jpg" alt="Pink Plain Kurta"/>
+                        <img src="../kurta'/10th.jpg" alt="Pink Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>kids green  Plain Kurta</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\kurta'\61bacbcb-d200-4d6a-acfe-1b6f7e2fda0a.jpg" alt="Premium Plain Kurta"/>
+                        <img src="../kurta'/61bacbcb-d200-4d6a-acfe-1b6f7e2fda0a.jpg" alt="Premium Plain Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>kids collection</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
@@ -1011,116 +878,107 @@
             <div class="category-grid">
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\10_8c0b5252-babf-4461-b97c-4a876f0aba7f_540x.webp" alt="White Chicken Kadai Kurta"/>
+                        <img src="../special kurta/10_8c0b5252-babf-4461-b97c-4a876f0aba7f_540x.webp" alt="White Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>maroon Chicken Kari Kurta</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\w1.webp" alt="Blue Chicken Kadai Kurta"/>
+                        <img src="../special kurta/w1.webp" alt="Blue Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Black Chicken Kari Kurta</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\w2.webp" alt="Cream Chicken Kadai Kurta"/>
+                        <img src="../special kurta/w2.webp" alt="Cream Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>green Chicken Kari Kurta</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\w3.webp" alt="Maroon Chicken Kadai Kurta"/>
+                        <img src="../special kurta/w3.webp" alt="Maroon Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Blue Chicken Kari Kurta</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\w4.webp" alt="Black Chicken Kadai Kurta"/>
+                        <img src="../special kurta/w4.webp" alt="Black Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>White Chicken Kari Kurta</h4>
-
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\w5.webp" alt="Green Chicken Kadai Kurta"/>
+                        <img src="../special kurta/w5.webp" alt="Green Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Cream Chicken Kari Kurta</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\w6.webp" alt="Orange Chicken Kadai Kurta"/>
+                        <img src="../special kurta/w6.webp" alt="Orange Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Purple Chicken Kari Kurta</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\w8.webp" alt="Golden Chicken Kadai Kurta"/>
+                        <img src="../special kurta/w8.webp" alt="Golden Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Pink Chicken Kari Kurta</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\w9.jpg" alt="Silver Chicken Kadai Kurta"/>
+                        <img src="../special kurta/w9.jpg" alt="Silver Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>kurta collection</h4>
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\special kurta\w10.jpg" alt="Premium Chicken Kadai Kurta"/>
+                        <img src="../special kurta/w10.jpg" alt="Premium Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
                         <h4>Kurta collection</h4>
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
     <!-- Gunyo Choli -->
     <section class="category-section" id="gunyo">
         <div class="container">
@@ -1130,108 +988,48 @@
             <div class="category-grid">
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m1.webp" alt="White Chicken Kadai Kurta"/>
+                        <img src="../gunyo and gor;s/m1.webp" alt="White Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m2.webp" alt="Blue Chicken Kadai Kurta"/>
+                        <img src="../gunyo and gor;s/m2.webp" alt="Blue Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m3.webp" alt="Cream Chicken Kadai Kurta"/>
+                        <img src="../gunyo and gor;s/m3.webp" alt="Cream Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
-                       
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m4.webp" alt="Maroon Chicken Kadai Kurta"/>
+                        <img src="../gunyo and gor;s/m4.webp" alt="Maroon Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
                 
                 <div class="category-card">
                     <div class="category-card-image">
-                        <img src="C:\xampp\htdocs\website\gunyo and gor;s\m5.webp" alt="Black Chicken Kadai Kurta"/>
+                        <img src="../gunyo and gor;s/m5.webp" alt="Black Chicken Kadai Kurta"/>
                     </div>
                     <div class="category-card-info">
-                        
                         <div class="category-card-price"></div>
                     </div>
                 </div>
-                
-                <!-- <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="https://images.pexels.com/photos/1049317/pexels-photo-1049317.jpeg" alt="Green Chicken Kadai Kurta"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Green Chicken Kadai Kurta</h4>
-                        <p>Fresh green kurta with traditional chicken kadai patterns, perfect for festivals.</p>
-                        <div class="category-card-price">NPR 8,800</div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="https://images.pexels.com/photos/8460157/pexels-photo-8460157.jpeg" alt="Orange Chicken Kadai Kurta"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Orange Chicken Kadai Kurta</h4>
-                        <p>Vibrant orange kurta with intricate chicken kadai work, ideal for cultural celebrations.</p>
-                        <div class="category-card-price">NPR 9,200</div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="https://images.pexels.com/photos/5704721/pexels-photo-5704721.jpeg" alt="Golden Chicken Kadai Kurta"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Golden Chicken Kadai Kurta</h4>
-                        <p>Luxurious golden kurta with elaborate chicken kadai embroidery for special occasions.</p>
-                        <div class="category-card-price">NPR 12,500</div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="https://images.pexels.com/photos/1049317/pexels-photo-1049317.jpeg" alt="Silver Chicken Kadai Kurta"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Silver Chicken Kadai Kurta</h4>
-                        <p>Elegant silver kurta with detailed chicken kadai work, perfect for formal gatherings.</p>
-                        <div class="category-card-price">NPR 11,800</div>
-                    </div>
-                </div>
-                
-                <div class="category-card">
-                    <div class="category-card-image">
-                        <img src="https://images.pexels.com/photos/8460157/pexels-photo-8460157.jpeg" alt="Premium Chicken Kadai Kurta"/>
-                    </div>
-                    <div class="category-card-info">
-                        <h4>Premium Chicken Kadai Kurta</h4>
-                        <p>High-end kurta with masterful chicken kadai embroidery, showcasing finest craftsmanship.</p>
-                        <div class="category-card-price">NPR 15,000</div>
-                    </div>
-                </div> -->
             </div>
         </div>
     </section>
@@ -1278,7 +1076,7 @@
                 <div class="footer-section">
                     <h4>Contact Info</h4>
                     <div style="display: flex;">
-                        <p>Phone: . </p>
+                        <p>Phone: </p>
                         <a href="tel:+9779851223736"> +977 9851223736</a>
                     </div>
                     <p>
@@ -1297,139 +1095,8 @@
             </div>
         </div>
     </footer>
-     <script>
-        // Enhanced bidirectional scroll animation system
-        const observerOptions = {
-            threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-            rootMargin: '0px 0px 0px 0px'
-        };
-        
-        let lastScrollY = window.scrollY;
-        let scrollDirection = 'down';
-        
-        // Track scroll direction
-        window.addEventListener('scroll', () => {
-            const currentScrollY = window.scrollY;
-            scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
-            lastScrollY = currentScrollY;
-        });
-        
-        // Enhanced intersection observer for bidirectional animations
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                const element = entry.target;
-                const ratio = entry.intersectionRatio;
-                
-                // Add scroll-animate class if not present
-                if (!element.classList.contains('scroll-animate')) {
-                    element.classList.add('scroll-animate');
-                }
-                
-                // Remove all animation classes first
-                element.classList.remove('fade-in-up', 'fade-out-down', 'fade-in-down', 'fade-out-up');
-                
-                if (entry.isIntersecting) {
-                    // Element is visible
-                    element.classList.add('animate');
-                    
-                    if (scrollDirection === 'down') {
-                        element.classList.add('fade-in-up');
-                    } else {
-                        element.classList.add('fade-in-down');
-                    }
-                } else {
-                    // Element is not visible
-                    if (ratio === 0) {
-                        if (scrollDirection === 'down') {
-                            element.classList.add('fade-out-up');
-                        } else {
-                            element.classList.add('fade-out-down');
-                        }
-                    }
-                }
-            });
-        }, observerOptions);
-        
-        // Observe all animatable elements
-        document.querySelectorAll('.products-section, .about-section, .contact-section, .product-card, .section-title, .contact-card, .feature, .about-image, .about-text').forEach(section => {
-            observer.observe(section);
-        });
-        
-        // Enhanced product cards animation with stagger effect
-        const productCards = document.querySelectorAll('.product-card');
-        const productObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
-                const element = entry.target;
-                
-                if (!element.classList.contains('scroll-animate')) {
-                    element.classList.add('scroll-animate');
-                }
-                
-                element.classList.remove('fade-in-up', 'fade-out-down', 'fade-in-down', 'fade-out-up');
-                
-                if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        if (scrollDirection === 'down') {
-                            element.classList.add('fade-in-up');
-                        } else {
-                            element.classList.add('fade-in-down');
-                        }
-                    }, index * 100); // Stagger effect
-                } else {
-                    if (scrollDirection === 'down') {
-                        element.classList.add('fade-out-up');
-                    } else {
-                        element.classList.add('fade-out-down');
-                    }
-                }
-            });
-        }, {
-            threshold: [0, 0.3, 0.7, 1],
-            rootMargin: '50px 0px -50px 0px'
-        });
-        
-        productCards.forEach(card => {
-            productObserver.observe(card);
-        });
-        
-        // Navbar animation on scroll
-        const navbar = document.querySelector('.navbar');
-        let lastNavScrollY = window.scrollY;
-        
-        window.addEventListener('scroll', () => {
-            const currentScrollY = window.scrollY;
-            
-            if (currentScrollY > lastNavScrollY && currentScrollY > 100) {
-                // Scrolling down - hide navbar
-                navbar.style.transform = 'translateY(-100%)';
-            } else {
-                // Scrolling up - show navbar
-                navbar.style.transform = 'translateY(0)';
-            }
-            
-            // Add background blur when scrolled
-            if (currentScrollY > 50) {
-                navbar.style.background = 'rgba(139, 0, 0, 0.98)';
-                navbar.style.backdropFilter = 'blur(15px)';
-            } else {
-                navbar.style.background = 'rgba(139, 0, 0, 0.95)';
-                navbar.style.backdropFilter = 'blur(10px)';
-            }
-            
-            lastNavScrollY = currentScrollY;
-        });
-        
-        // Image loading animation
-        document.querySelectorAll('img').forEach(img => {
-            if (img.complete) {
-                img.classList.add('loaded');
-            } else {
-                img.addEventListener('load', () => {
-                    img.classList.add('loaded');
-                });
-            }
-        });
-        
+
+    <script>
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -1443,31 +1110,47 @@
                 }
             });
         });
-        
-        // Parallax effect for hero section
-        const hero = document.querySelector('.hero');
-        const heroContent = document.querySelector('.hero-content');
-        const heroImage = document.querySelector('.hero-image');
+
+        // Navbar animation on scroll with mobile optimization
+        const navbar = document.querySelector('.navbar');
+        let lastNavScrollY = window.scrollY;
+        let scrollTimeout;
         
         window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const parallaxSpeed = 0.5;
+            const currentScrollY = window.scrollY;
             
-            if (hero && scrolled < hero.offsetHeight) {
-                heroContent.style.transform = `translateY(${scrolled * parallaxSpeed}px)`;
-                heroImage.style.transform = `translateY(${scrolled * parallaxSpeed * 0.3}px)`;
+            if (currentScrollY > lastNavScrollY && currentScrollY > 100) {
+                navbar.style.transform = 'translateY(-100%)';
+            } else {
+                navbar.style.transform = 'translateY(0)';
             }
-        });
-        
-        // Add loading animation to the page
-        window.addEventListener('load', () => {
-            document.body.style.opacity = '0';
-            document.body.style.transition = 'opacity 0.5s ease';
             
-            setTimeout(() => {
-                document.body.style.opacity = '1';
-            }, 100);
-        });
+            if (currentScrollY > 50) {
+                navbar.style.background = 'rgba(139, 0, 0, 0.98)';
+                navbar.style.backdropFilter = 'blur(15px)';
+            } else {
+                navbar.style.background = 'rgba(139, 0, 0, 0.95)';
+                navbar.style.backdropFilter = 'blur(10px)';
+            }
+            
+            lastNavScrollY = currentScrollY;
+        }, { passive: true });
+
+        // Optimize for mobile: Defer non-critical scripts
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(function() {
+                // Load additional features when idle
+            });
+        }
+
+        // Detect mobile device and apply optimizations
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isMobile) {
+            document.documentElement.classList.add('is-mobile');
+        }
+
+        // Improve touch responsiveness
+        document.addEventListener('touchmove', function() {}, { passive: true });
     </script>
 </body>
 </html>

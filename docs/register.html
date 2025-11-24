@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register - Gautam Lady Shoes</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <main class="container" style="padding:4rem 1rem;max-width:600px;margin:0 auto;">
+        <h1 style="text-align:center;color:#8B0000;font-family:'Playfair Display',serif;">Create an Account</h1>
+        <p style="text-align:center;color:#666;margin-bottom:1.5rem;">Sign up to place orders and manage your account</p>
+
+        <div id="registerMessages" style="color:#b00020;margin-bottom:1rem;"></div>
+
+        <form action="register.php" method="POST" id="registerPageForm">
+            <div style="display:flex;gap:1rem;margin-bottom:1rem;">
+                <input type="text" name="first_name" placeholder="First name" required style="flex:1;padding:10px;border:1px solid #ddd;border-radius:6px;">
+                <input type="text" name="last_name" placeholder="Last name" required style="flex:1;padding:10px;border:1px solid #ddd;border-radius:6px;">
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <input type="email" name="email" placeholder="Email address" required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;">
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <input type="password" name="password" placeholder="Password (min 6 chars)" required style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;">
+            </div>
+
+            <div style="display:flex;gap:1rem;align-items:center;">
+                <button type="submit" style="background:#8B0000;color:#fff;padding:10px 18px;border-radius:8px;border:none;">Create Account</button>
+                <a href="login.html" style="color:#8B0000;">Already have an account? Login</a>
+            </div>
+        </form>
+
+        <script>
+        // Optional: intercept submit and use AJAX to show messages
+        document.getElementById('registerPageForm').addEventListener('submit', function(e){
+            e.preventDefault();
+            const form = this;
+            const fd = new FormData(form);
+            fetch('register.php', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: fd })
+                .then(r => r.json())
+                .then(data => {
+                    const m = document.getElementById('registerMessages');
+                    m.textContent = data.message || (data.success ? 'Success' : 'Error');
+                    if (data.success) {
+                        m.style.color = '#0a7a07';
+                        setTimeout(()=>{ window.location = 'index.html'; }, 1000);
+                    } else {
+                        m.style.color = '#b00020';
+                    }
+                })
+                .catch(()=>{
+                    const m = document.getElementById('registerMessages');
+                    m.textContent = 'An error occurred. Please try again.';
+                    m.style.color = '#b00020';
+                });
+        });
+        </script>
+    </main>
+</body>
+</html>

@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Login to Gautam Lady Shoes - Access your account">
+    <meta name="theme-color" content="#8B0000">
     <title>Traditional Slippers - Gautam Lady Shoes</title>
     <link rel="stylesheet" href="login.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;600&display=swap" rel="stylesheet">
@@ -46,6 +48,9 @@
             </div>
             
             <div class="modal-content">
+                <div id="messageContainer" style="display:none;margin:0 20px 10px;">
+                    <div id="message" class="message"></div>
+                </div>
                 <div class="auth-tabs">
                     <button class="tab-btn active" onclick="showLogin()">Login</button>
                     <button class="tab-btn" onclick="showRegister()">Register</button>
@@ -147,42 +152,6 @@
                 </div>
 
                 <div class="divider">
-                    <span>or</span>
-                </div>
-
-                <div class="social-login">
-                    <button type="button" class="social-btn google-btn">
-                        <span class="social-icon">🔍</span>
-                        Continue with Google
-                    </button>
-                    <button type="button" class="social-btn facebook-btn">
-                        <span class="social-icon">📘</span>
-                        Continue with Facebook
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success/Error Messages -->
-    <div class="message-container" id="messageContainer" style="display: none;">
-        <div class="message" id="message"></div>
-    </div>
-
-    <!-- Sample Content -->
-    <section class="sample-content">
-        <div class="container">
-            <h2>Our Traditional Collection</h2>
-            <p>Discover the finest handcrafted Nepalese slippers, made with traditional techniques passed down through generations.</p>
-        </div>
-    </section>
-
-    <script>
-        // Modal Functions
-        function openLoginModal() {
-            document.getElementById('loginModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
 
         function closeLoginModal() {
             document.getElementById('loginModal').style.display = 'none';
@@ -262,6 +231,9 @@
                 
                 fetch('login.php', {
                     method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: formData
                 })
                 .then(response => response.json())
@@ -346,6 +318,9 @@
                 
                 fetch('register.php', {
                     method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: formData
                 })
                 .then(response => response.json())

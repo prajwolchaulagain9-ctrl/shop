@@ -363,3 +363,38 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #B8860B;
 }
+
+/* Mobile-First Responsive Improvements */
+@media (max-width: 768px) {
+    .nav-menu { display: none !important; }
+    .nav-container { padding: 0 10px; }
+    .logo h2 { font-size: 1.2rem; }
+    .hero { margin-top: 60px; min-height: 50vh; padding: 20px; }
+    .hero h1 { font-size: 1.8rem; line-height: 1.3; }
+    .hero p { font-size: 0.95rem; margin: 15px 0; }
+    .category-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important; gap: 10px !important; }
+    .category-card-image { height: 180px !important; }
+    .category-card-info h4 { font-size: 0.9rem; }
+    .cta-button { padding: 10px 20px !important; font-size: 0.95rem; }
+    .about-content { flex-direction: column !important; }
+    .about-image img { margin-top: 20px; width: 100%; }
+    .footer-content { grid-template-columns: 1fr !important; text-align: center; }
+    .footer-section { margin-bottom: 20px; }
+    .modal-container { width: 95vw !important; max-width: 95vw !important; margin: 20px auto !important; }
+}
+@media (max-width: 480px) {
+    .hero { min-height: 45vh; }
+    .hero h1 { font-size: 1.3rem; }
+    .hero p { font-size: 0.85rem; }
+    .category-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important; gap: 8px !important; }
+    .category-card-image { height: 150px !important; }
+    .category-title { font-size: 1.4rem; }
+    .category-subtitle { font-size: 0.85rem; }
+    .about-section .about-text h2 { font-size: 1.4rem; }
+    .heritage-features { grid-template-columns: 1fr !important; }
+}
+img { max-width: 100%; height: auto; }
+@media (hover: none) {
+    button { min-height: 44px; }
+    .category-card { cursor: pointer; }
+}
