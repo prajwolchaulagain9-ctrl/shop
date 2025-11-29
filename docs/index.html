@@ -993,6 +993,14 @@
                 document.body.style.opacity = '1';
             }, 100);
         });
+         // Detect mobile device and apply optimizations
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isMobile) {
+            document.documentElement.classList.add('is-mobile');
+        }
+
+        // Improve touch responsiveness
+        document.addEventListener('touchmove', function() {}, { passive: true });
     </script>
 </body>
 </html>
