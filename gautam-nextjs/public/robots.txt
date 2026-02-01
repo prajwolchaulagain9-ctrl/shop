@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api
+Disallow: /.next
+Disallow: /node_modules
+
+Sitemap: https://gautam-lady-shoes.com/sitemap.xml

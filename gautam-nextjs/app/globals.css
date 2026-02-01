@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+:root {
+  --primary-dark: #8b0000;
+  --primary-light: #dc143c;
+  --accent: #daa520;
+  --accent-dark: #b8860b;
+  --text-dark: #2c1810;
+  --text-light: #666666;
+  --bg-light: #f8f9fa;
+  --bg-lighter: #f8f6f3;
+  --border-light: #f0f0f0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-lato);
+  background-color: #fefefe;
+  color: #333;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair);
+  font-weight: 700;
+}
+
+/* Smooth transitions and animations */
+* {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Remove transition from scroll-sensitive elements */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* iOS and Android optimizations */
+body {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-feature-settings: "kern" 1;
+}
+
+/* Touch-friendly tap targets - minimum 44x44px for iOS, 48x48px for Android */
+button,
+a,
+input[type="button"],
+input[type="submit"],
+label {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 12px 16px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Optimize images for mobile */
+img {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Optimize iframes for mobile */
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Improve tap feedback on mobile */
+input,
+select,
+textarea,
+button {
+  font-size: 16px;
+  border-radius: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Improve scrolling performance */
+.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile-specific responsive text */
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+
+  body {
+    line-height: 1.7;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Safe area support for notched devices */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
