@@ -31,15 +31,20 @@ export default function ProductCard({
       viewport={{ once: true, amount: 0.2 }}
       whileHover={{ y: -8 }}
       className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full relative"
+      suppressHydrationWarning
     >
       {/* Image Container */}
-      <div className={`relative h-72 overflow-hidden bg-gray-100 ${!isAuthenticated ? 'blur-sm' : ''}`}>
-        <motion.img
+      <div 
+        className={`relative h-72 overflow-hidden bg-gray-100 ${!isAuthenticated ? 'blur-sm' : ''}`}
+        suppressHydrationWarning
+      >
+        <Image
           src={image}
           alt={name}
+          fill
           className="w-full h-full object-cover"
-          whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.4 }}
+          style={{ objectFit: 'cover' }}
+          priority={index === 0}
         />
       </div>
 

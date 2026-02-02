@@ -460,7 +460,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
               )}
 
               {/* Register Form */}
-              {activeTab === 'register' && (
+              {activeTab === 'register' && registerStep === 'form' && (
                 <motion.form
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

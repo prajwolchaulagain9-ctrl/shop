@@ -311,11 +311,11 @@ export default function Home() {
           >
             {/* Map */}
             <div className="lg:col-span-2">
-              <div className="rounded-lg overflow-hidden shadow-xl h-96 lg:h-full min-h-96">
+              <div className="rounded-lg overflow-hidden shadow-xl h-[600px]">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.3460636218306!2d85.30800907554054!3d27.706599476183023!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb18ff0d2bba2f%3A0xfdcb522760296bf9!2sGautam%20Lady%20Shoes!5e0!3m2!1sen!2sus!4v1769972717913!5m2!1sen!2sus"
                   width="100%"
-                  height="100%"
+                  height="600"
                   style={{ border: 0 }}
                   allowFullScreen
                   loading="lazy"

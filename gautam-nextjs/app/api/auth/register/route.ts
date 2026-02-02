@@ -18,6 +18,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid email format' },
+        { status: 400 }
+      );
+    }
+
+    // Production email domain check
+    if (process.env.NODE_ENV === 'production') {
+      const allowedDomains = process.env.ALLOWED_EMAIL_DOMAINS?.split(',').map(d => d.toLowerCase()) || [];
+      if (allowedDomains.length > 0) {
+        const emailDomain = email.split('@')[1].toLowerCase();
+        if (!allowedDomains.includes(emailDomain)) {
+          return NextResponse.json(
+            { success: false, message: 'Email domain not allowed' },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     if (password !== confirmPassword) {
       return NextResponse.json(
         { success: false, message: 'Passwords do not match' },
@@ -77,8 +100,14 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     console.error('Registration error:', error);
+    
+    // Don't expose detailed error messages in production
+    const errorMessage = process.env.NODE_ENV === 'production'
+      ? 'Registration failed. Please try again.'
+      : error.message || 'Registration failed';
+    
     return NextResponse.json(
-      { success: false, message: error.message || 'Registration failed' },
+      { success: false, message: errorMessage },
       { status: 500 }
     );
   }
