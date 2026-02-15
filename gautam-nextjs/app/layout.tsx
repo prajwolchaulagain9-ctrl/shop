@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import RootLayoutClient from "@/components/RootLayoutClient";
@@ -15,16 +15,21 @@ const lato = Lato({
   weight: ["300", "400", "700"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#8b0000" },
+    { media: "(prefers-color-scheme: dark)", color: "#dc143c" },
+  ],
+};
+
 export const metadata: Metadata = {
   title: "Gautam Lady Shoes - Traditional Nepalese Slippers & Clothing",
   description: "Authentic traditional Nepalese slippers and handcrafted garments by Gautam Lady Shoes",
   metadataBase: new URL("https://gautam-lady-shoes.com"),
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -35,10 +40,6 @@ export const metadata: Metadata = {
     email: true,
     address: true,
   },
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#8b0000" },
-    { media: "(prefers-color-scheme: dark)", color: "#dc143c" },
-  ],
   icons: [
     { rel: "icon", url: "/favicon.ico", type: "image/x-icon" },
     { rel: "apple-touch-icon", url: "/apple-touch-icon.png", sizes: "180x180" },

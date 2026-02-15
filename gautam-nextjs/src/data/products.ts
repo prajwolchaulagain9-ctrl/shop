@@ -4,7 +4,7 @@ export const slippers = {
       id: 'block-heel-1',
       name: 'Block Heel Slippers',
       price: 'NPR 1200',
-      image: 'gautam-nextjs/public/38f01535-e2f9-4c07-a16c-be8654f3330a.jpg',
+      image: '/38f01535-e2f9-4c07-a16c-be8654f3330a.jpg',
       description: 'Comfortable block heel slippers with traditional Nepalese design',
     },
     {
