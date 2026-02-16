@@ -268,7 +268,7 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {activeTab === 'orders' && <OrdersTable token={token} />}
+        {activeTab === 'orders' && token && <OrdersTable token={token} />}
       </div>
     </div>
   );
