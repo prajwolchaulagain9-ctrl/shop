@@ -6,19 +6,27 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "init-db": "node scripts/init-db.js",
+    "create-admin": "node scripts/create-admin.js"
   },
   "dependencies": {
+    "@types/leaflet": "^1.9.21",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "framer-motion": "^12.29.2",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.1.5",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.564.0",
+    "mongoose": "^9.2.1",
     "next": "16.1.6",
     "nodemailer": "^7.0.13",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "resend": "^6.9.1"
+    "react-leaflet": "^5.0.0",
+    "recharts": "^2.12.7",
+    "resend": "^6.9.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -28,6 +36,7 @@
     "@types/nodemailer": "^7.0.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",

@@ -1,7 +1,5 @@
-const CACHE_NAME = 'gautam-lady-shoes-v1';
+const CACHE_NAME = 'gautam-lady-shoes-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
   '/favicon.ico',
   '/manifest.json',
 ];
@@ -35,31 +33,32 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - Network first strategy for development
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') {
     return;
   }
 
+  // Network first, fallback to cache
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request).then((response) => {
-        // Cache successful responses
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
+    fetch(event.request)
+      .then((response) => {
+        // Don't cache API calls or hot-reload requests
+        if (response && response.status === 200 && 
+            !event.request.url.includes('/api/') &&
+            !event.request.url.includes('/_next/') &&
+            !event.request.url.includes('hot-update')) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-
         return response;
-      }).catch(() => {
-        // Return cached response if network fails
+      })
+      .catch(() => {
+        // Fallback to cache only if network fails
         return caches.match(event.request);
-      });
-    })
+      })
   );
 });
 

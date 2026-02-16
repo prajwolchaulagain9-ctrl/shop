@@ -4,16 +4,19 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { useCart } from '@/lib/contexts/CartContext';
+import { ShoppingCart, LayoutDashboard } from 'lucide-react';
 
 interface NavbarProps {
-  onSidebarToggle: () => void;
-  onLoginClick: () => void;
+  onSidebarToggle?: () => void;
+  onLoginClick?: () => void;
 }
 
 export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
+  const { cartCount, toggleCart } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,6 +92,38 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
 
           {/* Buttons Group */}
           <div className="flex items-center gap-4">
+            {/* Admin Dashboard Button */}
+            {isAuthenticated && (user as any)?.role === 'admin' && (
+              <motion.button
+                onClick={() => window.location.href = '/admin'}
+                className="relative text-white p-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+                aria-label="Admin Dashboard"
+                whileTap={{ scale: 0.95 }}
+                title="Admin Dashboard"
+              >
+                <LayoutDashboard className="w-6 h-6" />
+              </motion.button>
+            )}
+
+            {/* Cart Button */}
+            <motion.button
+              onClick={toggleCart}
+              className="relative text-white p-2 bg-red-800 rounded-lg hover:bg-red-700 transition-colors"
+              aria-label="Shopping cart"
+              whileTap={{ scale: 0.95 }}
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {cartCount > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
+                >
+                  {cartCount > 99 ? '99+' : cartCount}
+                </motion.span>
+              )}
+            </motion.button>
+
             {!isAuthenticated ? (
               <motion.button
                 onClick={onLoginClick}

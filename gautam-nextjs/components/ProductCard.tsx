@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/lib/contexts/AuthContext';
+import { useCart } from '@/lib/contexts/CartContext';
+import { ShoppingCart } from 'lucide-react';
 
 interface ProductCardProps {
   id: string;
@@ -21,8 +22,7 @@ export default function ProductCard({
   description,
   index = 0,
 }: ProductCardProps) {
-  const { isAuthenticated } = useAuth();
-
+  const { addToCart } = useCart();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -30,20 +30,19 @@ export default function ProductCard({
       transition={{ duration: 0.4, delay: (index % 3) * 0.1 }}
       viewport={{ once: true, amount: 0.2 }}
       whileHover={{ y: -8 }}
-      className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full relative"
+      className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full"
       suppressHydrationWarning
     >
       {/* Image Container */}
       <div 
-        className={`relative h-72 overflow-hidden bg-gray-100 ${!isAuthenticated ? 'blur-sm' : ''}`}
+        className="relative h-72 overflow-hidden bg-gray-100"
         suppressHydrationWarning
       >
         <Image
           src={image}
           alt={name}
           fill
-          className="w-full h-full object-cover"
-          style={{ objectFit: 'cover' }}
+          className="object-cover"
           priority={index === 0}
         />
       </div>
@@ -60,19 +59,26 @@ export default function ProductCard({
           </p>
         )}
 
-        <div className={`text-xl font-semibold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent ${!isAuthenticated ? 'blur-sm' : ''}`}>
-          {isAuthenticated ? price : '••••'}
+        <div className="text-xl font-semibold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent">
+          {price}
         </div>
-      </div>
 
-      {/* Login Overlay for Non-Authenticated Users */}
-      {!isAuthenticated && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg">
-          <p className="text-white font-semibold text-center text-lg bg-black/60 px-4 py-2 rounded">
-            Login to View
-          </p>
-        </div>
-      )}
+        {/* Add to Cart Button */}
+        <button 
+          className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+          onClick={() => {
+            addToCart({
+              productId: id,
+              name,
+              price,
+              image,
+            });
+          }}
+        >
+          <ShoppingCart className="w-5 h-5" />
+          Add to Cart
+        </button>
+      </div>
     </motion.div>
   );
 }

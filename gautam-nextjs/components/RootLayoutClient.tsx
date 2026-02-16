@@ -5,15 +5,18 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Sidebar from '@/components/Sidebar';
 import LoginModal from '@/components/LoginModal';
+import Cart from '@/components/Cart';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
+import { CartProvider } from '@/lib/contexts/CartContext';
+import { LoginProvider, useLogin } from '@/lib/contexts/LoginContext';
 
 interface RootLayoutClientProps {
   children: React.ReactNode;
 }
 
-export default function RootLayoutClient({ children }: RootLayoutClientProps) {
+function RootLayoutContent({ children }: RootLayoutClientProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
+  const { isLoginOpen, openLogin, closeLogin } = useLogin();
 
   useEffect(() => {
     // Register PWA manifest
@@ -54,12 +57,25 @@ export default function RootLayoutClient({ children }: RootLayoutClientProps) {
   }, []);
 
   return (
-    <AuthProvider>
-      <Navbar onSidebarToggle={() => setSidebarOpen(!sidebarOpen)} onLoginClick={() => setLoginOpen(true)} />
+    <>
+      <Navbar onSidebarToggle={() => setSidebarOpen(!sidebarOpen)} onLoginClick={openLogin} />
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
+      <LoginModal isOpen={isLoginOpen} onClose={closeLogin} />
+      <Cart />
       {children}
       <Footer />
+    </>
+  );
+}
+
+export default function RootLayoutClient({ children }: RootLayoutClientProps) {
+  return (
+    <AuthProvider>
+      <LoginProvider>
+        <CartProvider>
+          <RootLayoutContent>{children}</RootLayoutContent>
+        </CartProvider>
+      </LoginProvider>
     </AuthProvider>
   );
 }
