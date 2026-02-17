@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useToast } from '@/lib/contexts/ToastContext';
 import Image from 'next/image';
 import { Package, CheckCircle, Clock, XCircle, ArrowLeft } from 'lucide-react';
 
@@ -33,6 +34,7 @@ interface Order {
 export default function OrderDetailsPage() {
   const params = useParams();
   const router = useRouter();
+  const { showToast } = useToast();
   const orderId = params.orderId as string;
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,12 +53,12 @@ export default function OrderDetailsPage() {
       if (data.success) {
         setOrder(data.order);
       } else {
-        alert('Order not found');
+        showToast('error', 'Order not found');
         router.push('/');
       }
     } catch (error) {
       console.error('Error fetching order:', error);
-      alert('Failed to fetch order details');
+      showToast('error', 'Failed to fetch order details');
     } finally {
       setLoading(false);
     }

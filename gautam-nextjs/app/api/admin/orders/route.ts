@@ -1,35 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/connect';
 import Order from '@/lib/models/Order';
-import User from '@/lib/models/User';
-import { verifyToken, getTokenFromRequest } from '@/lib/utils/auth';
-
-async function verifyAdminToken(req: NextRequest) {
-  const token = getTokenFromRequest(req);
-  if (!token) {
-    return { error: 'Unauthorized', status: 401 };
-  }
-
-  const decoded = verifyToken(token);
-  if (!decoded) {
-    return { error: 'Invalid token', status: 401 };
-  }
-
-  await dbConnect();
-  const user = await User.findById(decoded.userId);
-  
-  if (!user || user.role !== 'admin') {
-    return { error: 'Forbidden', status: 403 };
-  }
-
-  return { user };
-}
+import { requireAdmin, forbiddenResponse } from '@/lib/middleware/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    const authResult = await verifyAdminToken(req);
-    if ('error' in authResult) {
-      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+    // Verify admin authentication
+    const admin = await requireAdmin(req);
+    if (!admin) {
+      return forbiddenResponse();
     }
 
     // Get query parameters
@@ -67,9 +46,10 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const authResult = await verifyAdminToken(req);
-    if ('error' in authResult) {
-      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+    // Verify admin authentication
+    const admin = await requireAdmin(req);
+    if (!admin) {
+      return forbiddenResponse();
     }
 
     await dbConnect();

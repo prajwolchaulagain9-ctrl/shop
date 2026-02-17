@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useToast } from '@/lib/contexts/ToastContext';
 import dynamic from 'next/dynamic';
 import { MapPin, Search } from 'lucide-react';
 
@@ -26,6 +27,7 @@ interface LocationPickerProps {
 }
 
 export default function LocationPicker({ location, onLocationChange }: LocationPickerProps) {
+  const { showToast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [position, setPosition] = useState<[number, number] | null>(
     location ? [location.lat, location.lng] : null
@@ -112,11 +114,11 @@ export default function LocationPicker({ location, onLocationChange }: LocationP
           formattedAddress: result.display_name,
         });
       } else {
-        alert('Location not found. Please try a different search term.');
+        showToast('warning', 'Location not found. Please try a different search term.');
       }
     } catch (error) {
       console.error('Search failed:', error);
-      alert('Failed to search location. Please try again.');
+      showToast('error', 'Failed to search location. Please try again.');
     } finally {
       setSearching(false);
     }
@@ -131,11 +133,11 @@ export default function LocationPicker({ location, onLocationChange }: LocationP
           reverseGeocode(pos.coords.latitude, pos.coords.longitude);
         },
         (error) => {
-          alert('Unable to get your location. Please enable location services.');
+          showToast('error', 'Unable to get your location. Please enable location services.');
         }
       );
     } else {
-      alert('Geolocation is not supported by your browser.');
+      showToast('error', 'Geolocation is not supported by your browser.');
     }
   };
 

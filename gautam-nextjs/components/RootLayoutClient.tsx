@@ -6,9 +6,12 @@ import Footer from '@/components/Footer';
 import Sidebar from '@/components/Sidebar';
 import LoginModal from '@/components/LoginModal';
 import Cart from '@/components/Cart';
+import ToastContainer from '@/components/ToastContainer';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { CartProvider } from '@/lib/contexts/CartContext';
 import { LoginProvider, useLogin } from '@/lib/contexts/LoginContext';
+import { ToastProvider } from '@/lib/contexts/ToastContext';
 
 interface RootLayoutClientProps {
   children: React.ReactNode;
@@ -58,12 +61,15 @@ function RootLayoutContent({ children }: RootLayoutClientProps) {
 
   return (
     <>
-      <Navbar onSidebarToggle={() => setSidebarOpen(!sidebarOpen)} onLoginClick={openLogin} />
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <LoginModal isOpen={isLoginOpen} onClose={closeLogin} />
-      <Cart />
-      {children}
-      <Footer />
+      <ErrorBoundary>
+        <Navbar onSidebarToggle={() => setSidebarOpen(!sidebarOpen)} onLoginClick={openLogin} />
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <LoginModal isOpen={isLoginOpen} onClose={closeLogin} />
+        <Cart />
+        <ToastContainer />
+        {children}
+        <Footer />
+      </ErrorBoundary>
     </>
   );
 }
@@ -71,11 +77,13 @@ function RootLayoutContent({ children }: RootLayoutClientProps) {
 export default function RootLayoutClient({ children }: RootLayoutClientProps) {
   return (
     <AuthProvider>
-      <LoginProvider>
-        <CartProvider>
-          <RootLayoutContent>{children}</RootLayoutContent>
-        </CartProvider>
-      </LoginProvider>
+      <ToastProvider>
+        <LoginProvider>
+          <CartProvider>
+            <RootLayoutContent>{children}</RootLayoutContent>
+          </CartProvider>
+        </LoginProvider>
+      </ToastProvider>
     </AuthProvider>
   );
 }

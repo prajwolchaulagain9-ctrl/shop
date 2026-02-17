@@ -2,11 +2,13 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, Suspense } from 'react';
+import { useToast } from '@/lib/contexts/ToastContext';
 import { Building2, Copy, CheckCircle } from 'lucide-react';
 
 function BankPaymentContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { showToast } = useToast();
   const orderId = searchParams.get('orderId');
   
   const [transactionId, setTransactionId] = useState('');
@@ -28,7 +30,7 @@ function BankPaymentContent() {
 
   const handleSubmit = async () => {
     if (!transactionId.trim()) {
-      alert('Please enter your transaction ID');
+      showToast('error', 'Please enter your transaction ID');
       return;
     }
 
@@ -47,14 +49,14 @@ function BankPaymentContent() {
       const data = await response.json();
 
       if (data.success) {
-        alert('Thank you! Your payment details have been submitted. We will verify and process your order shortly.');
+        showToast('success', 'Payment details submitted successfully! We will verify and process your order shortly.');
         router.push('/');
       } else {
-        alert(data.message || 'Failed to submit payment details');
+        showToast('error', data.message || 'Failed to submit payment details');
       }
     } catch (error) {
       console.error('Error submitting bank transfer:', error);
-      alert('Failed to submit payment details');
+      showToast('error', 'Failed to submit payment details. Please try again.');
     } finally {
       setLoading(false);
     }

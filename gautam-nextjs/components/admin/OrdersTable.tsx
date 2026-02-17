@@ -36,11 +36,7 @@ interface OrdersResponse {
   totalPages: number;
 }
 
-interface OrdersTableProps {
-  token: string;
-}
-
-export default function OrdersTable({ token }: OrdersTableProps) {
+export default function OrdersTable() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
@@ -59,9 +55,7 @@ export default function OrdersTable({ token }: OrdersTableProps) {
       });
 
       const response = await fetch(`/api/admin/orders?${params}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -77,10 +71,8 @@ export default function OrdersTable({ token }: OrdersTableProps) {
   };
 
   useEffect(() => {
-    if (token) {
-      fetchOrders();
-    }
-  }, [status, page, token]);
+    fetchOrders();
+  }, [status, page]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
@@ -89,8 +81,8 @@ export default function OrdersTable({ token }: OrdersTableProps) {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
         },
+        credentials: 'include',
         body: JSON.stringify({
           orderId,
           orderStatus: newStatus,

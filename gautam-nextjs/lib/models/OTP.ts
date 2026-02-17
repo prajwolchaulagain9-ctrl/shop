@@ -31,4 +31,8 @@ const otpSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Compound index for efficient queries
+otpSchema.index({ email: 1, expiresAt: 1 });
+otpSchema.index({ verified: 1 });
+
 export default mongoose.models.OTP || mongoose.model('OTP', otpSchema);

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db/connect';
 import Order from '@/lib/models/Order';
+import { requireAdmin, forbiddenResponse, unauthorizedResponse } from '@/lib/middleware/auth';
 
 export async function POST(req: NextRequest) {
   try {
@@ -57,6 +58,12 @@ export async function POST(req: NextRequest) {
 // Admin endpoint to verify bank transfer
 export async function PUT(req: NextRequest) {
   try {
+    // Verify admin authentication
+    const admin = await requireAdmin(req);
+    if (!admin) {
+      return forbiddenResponse('Admin access required to verify payments');
+    }
+    
     await connectDB();
 
     const { orderId, verified } = await req.json();

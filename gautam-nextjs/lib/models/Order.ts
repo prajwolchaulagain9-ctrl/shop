@@ -58,10 +58,10 @@ const OrderSchema = new Schema<IOrder>({
   },
   transactionId: { type: String, required: false },
   customerDetails: {
-    name: { type: String, required: false },
+    name: { type: String, required: true },
     email: { type: String, required: false },
-    phone: { type: String, required: false },
-    address: { type: String, required: false },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
     location: {
       lat: { type: Number, required: false },
       lng: { type: Number, required: false },

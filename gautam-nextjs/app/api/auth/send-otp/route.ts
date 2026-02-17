@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db/connect';
 import OTP from '@/lib/models/OTP';
 import { Resend } from 'resend';
+import { checkRateLimit, getClientIp, RateLimitPresets } from '@/lib/utils/rateLimit';
+import bcryptjs from 'bcryptjs';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -31,18 +33,38 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    
+    // Rate limiting: 3 OTPs per hour per email
+    const rateLimitResult = checkRateLimit({
+      identifier: email.toLowerCase(),
+      namespace: 'send-otp',
+      ...RateLimitPresets.SEND_OTP,
+    });
+    
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: `Too many OTP requests. Please try again in ${Math.ceil(rateLimitResult.resetIn! / 60)} minutes.` 
+        },
+        { status: 429 }
+      );
+    }
 
     // Generate OTP
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
+    // Hash OTP before storing (security best practice)
+    const hashedOtp = await bcryptjs.hash(otp, 10);
+
     // Delete any existing OTP for this email
     await OTP.deleteMany({ email: email.toLowerCase() });
 
-    // Save OTP to database
+    // Save hashed OTP to database
     await OTP.create({
       email: email.toLowerCase(),
-      otp,
+      otp: hashedOtp,
       expiresAt,
     });
 

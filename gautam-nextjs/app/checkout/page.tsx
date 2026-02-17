@@ -2,6 +2,7 @@
 
 import { useCart } from '@/lib/contexts/CartContext';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { useToast } from '@/lib/contexts/ToastContext';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -26,6 +27,7 @@ interface CustomerDetails {
 export default function CheckoutPage() {
   const { cart, clearCart } = useCart();
   const { isAuthenticated, user, loading: authLoading } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
   const [selectedPayment, setSelectedPayment] = useState<'cod' | 'esewa' | 'khalti' | 'bank' | null>(null);
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
@@ -42,10 +44,10 @@ export default function CheckoutPage() {
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      alert('Please login to proceed with checkout');
+      showToast('warning', 'Please login to proceed with checkout');
       router.push('/');
     }
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated, router, showToast]);
 
   // Pre-fill customer details from user profile if available
   useEffect(() => {
@@ -85,19 +87,19 @@ export default function CheckoutPage() {
 
   const validateForm = () => {
     if (!customerDetails.name.trim()) {
-      alert('Please enter your name');
+      showToast('error', 'Please enter your name');
       return false;
     }
     if (!customerDetails.phone.trim()) {
-      alert('Please enter your phone number');
+      showToast('error', 'Please enter your phone number');
       return false;
     }
     if (!customerDetails.address.trim()) {
-      alert('Please enter your delivery address');
+      showToast('error', 'Please enter your delivery address');
       return false;
     }
     if (!selectedPayment) {
-      alert('Please select a payment method');
+      showToast('error', 'Please select a payment method');
       return false;
     }
     return true;
@@ -129,7 +131,7 @@ export default function CheckoutPage() {
           setOrderSuccess(true);
           clearCart();
         } else {
-          alert(data.message || 'Failed to place order');
+          showToast('error', data.message || 'Failed to place order');
         }
       } else {
         // Online payment - create payment order
@@ -151,15 +153,15 @@ export default function CheckoutPage() {
           if (data.paymentUrl) {
             window.location.href = data.paymentUrl;
           } else {
-            alert('Payment gateway URL not available');
+            showToast('error', 'Payment gateway URL not available');
           }
         } else {
-          alert(data.message || 'Failed to initiate payment');
+          showToast('error', data.message || 'Failed to initiate payment');
         }
       }
     } catch (error) {
       console.error('Error placing order:', error);
-      alert('Failed to place order');
+      showToast('error', 'Failed to place order. Please try again.');
     } finally {
       setLoading(false);
     }

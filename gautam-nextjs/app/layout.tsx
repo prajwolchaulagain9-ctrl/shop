@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import RootLayoutClient from "@/components/RootLayoutClient";
+import "@/lib/utils/validateEnv"; // Validate environment variables on server startup
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",

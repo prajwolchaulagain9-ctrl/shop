@@ -1,10 +1,17 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import HeroSection from '@/components/HeroSection';
 import ProductCard from '@/components/ProductCard';
 import { slippers, clothing, collections } from '@/src/data/products';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+
+// Lazy load the footer (it's below the fold) 
+const LazyFooter = dynamic(() => import('@/components/Footer'), {
+  ssr: false,
+  loading: () => null,
+});
 
 export default function Home() {
   return (

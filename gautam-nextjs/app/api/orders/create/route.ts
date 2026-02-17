@@ -3,6 +3,7 @@ import connectDB from '@/lib/db/connect';
 import Order from '@/lib/models/Order';
 import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
+import { calculateOrderTotal } from '@/lib/utils/pricing';
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,12 +19,40 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!totalAmount || totalAmount <= 0) {
+    // Calculate total server-side from actual product prices
+    const calculation = calculateOrderTotal(items);
+    
+    if (!calculation.success) {
       return NextResponse.json(
-        { success: false, message: 'Invalid total amount' },
+        { success: false, message: calculation.error || 'Failed to calculate order total' },
         { status: 400 }
       );
     }
+    
+    // Verify client-sent total matches server calculation
+    const serverTotal = calculation.total;
+    const clientTotal = typeof totalAmount === 'number' ? totalAmount : 0;
+    
+    // Allow small rounding differences (1 NPR) but reject manipulated totals
+    if (Math.abs(serverTotal - clientTotal) > 1) {
+      console.warn('Price manipulation attempt detected:', {
+        clientTotal,
+        serverTotal,
+        items: calculation.breakdown,
+      });
+      
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Order total mismatch. Please refresh and try again.',
+          expectedTotal: serverTotal,
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Use server-calculated total
+    const validatedTotal = serverTotal;
 
     if (!paymentMethod) {
       return NextResponse.json(
@@ -50,7 +79,7 @@ export async function POST(req: NextRequest) {
     const order = new Order({
       sessionId,
       items,
-      totalAmount,
+      totalAmount: validatedTotal, // Use server-calculated total
       paymentMethod,
       paymentStatus: paymentMethod === 'cod' ? 'verified' : 'pending',
       customerDetails,

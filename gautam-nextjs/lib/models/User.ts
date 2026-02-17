@@ -45,4 +45,10 @@ const UserSchema = new Schema(
   { timestamps: true }
 );
 
+// Indexes for performance
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ role: 1 });
+UserSchema.index({ isEmailVerified: 1 });
+UserSchema.index({ createdAt: -1 });
+
 export default models.User || model('User', UserSchema);

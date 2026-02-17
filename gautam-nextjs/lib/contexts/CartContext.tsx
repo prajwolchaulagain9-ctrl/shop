@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { useLogin } from './LoginContext';
+import { useToast } from './ToastContext';
 
 interface CartItem {
   productId: string;
@@ -38,6 +39,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
   const { openLogin } = useLogin();
+  const { showToast } = useToast();
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -120,7 +122,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const confirmPurchase = async (): Promise<boolean> => {
     if (cart.length === 0) {
-      alert('Your cart is empty');
+      showToast('warning', 'Your cart is empty');
       return false;
     }
 
@@ -137,14 +139,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (data.success) {
         // Clear local cart after successful confirmation
         clearCart();
+        showToast('success', 'Purchase confirmed successfully!');
         return true;
       } else {
-        alert(data.message || 'Failed to confirm purchase');
+        showToast('error', data.message || 'Failed to confirm purchase');
         return false;
       }
     } catch (error) {
       console.error('Error confirming purchase:', error);
-      alert('Failed to confirm purchase');
+      showToast('error', 'Failed to confirm purchase. Please try again.');
       return false;
     } finally {
       setLoading(false);

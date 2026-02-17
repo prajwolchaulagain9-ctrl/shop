@@ -2,27 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/connect';
 import Order from '@/lib/models/Order';
 import User from '@/lib/models/User';
-import { verifyToken, getTokenFromRequest } from '@/lib/utils/auth';
+import { requireAdmin, forbiddenResponse } from '@/lib/middleware/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    // Verify admin token
-    const token = getTokenFromRequest(req);
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const decoded = verifyToken(token);
-    if (!decoded) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    }
-
-    // Get user to check role
-    await dbConnect();
-    const user = await User.findById(decoded.userId);
-    
-    if (!user || user.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    // Verify admin authentication
+    const admin = await requireAdmin(req);
+    if (!admin) {
+      return forbiddenResponse();
     }
 
     await dbConnect();

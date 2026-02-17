@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db/connect';
 import OTP from '@/lib/models/OTP';
+import User from '@/lib/models/User';
+import { checkRateLimit, getClientIp, RateLimitPresets } from '@/lib/utils/rateLimit';
+import bcryptjs from 'bcryptjs';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +16,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, message: 'Email and OTP are required' },
         { status: 400 }
+      );
+    }
+    
+    // Rate limiting: 5 attempts per 15 minutes per IP
+    const ip = getClientIp(request);
+    const rateLimitResult = checkRateLimit({
+      identifier: ip,
+      namespace: 'verify-otp',
+      ...RateLimitPresets.VERIFY_OTP,
+    });
+    
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: `Too many verification attempts. Please try again in ${rateLimitResult.resetIn} seconds.` 
+        },
+        { status: 429 }
       );
     }
 
@@ -46,8 +67,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify OTP
-    if (otpRecord.otp !== otp.trim()) {
+    // Verify OTP using bcrypt (OTP is hashed in database)
+    const isOtpValid = await bcryptjs.compare(otp.trim(), otpRecord.otp);
+    
+    if (!isOtpValid) {
       otpRecord.attempts += 1;
       await otpRecord.save();
       return NextResponse.json(
@@ -63,11 +86,17 @@ export async function POST(request: NextRequest) {
     // OTP verified successfully
     otpRecord.verified = true;
     await otpRecord.save();
+    
+    // Mark user's email as verified
+    await User.updateOne(
+      { email: email.toLowerCase() },
+      { $set: { isEmailVerified: true } }
+    );
 
     return NextResponse.json(
       {
         success: true,
-        message: 'OTP verified successfully',
+        message: 'Email verified successfully. You can now log in.',
         verified: true,
       },
       { status: 200 }

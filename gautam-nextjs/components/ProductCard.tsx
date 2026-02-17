@@ -24,7 +24,9 @@ export default function ProductCard({
 }: ProductCardProps) {
   const { addToCart } = useCart();
   return (
-    <motion.div
+    <motion.article
+      role="article"
+      aria-label={`Product: ${name}`}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: (index % 3) * 0.1 }}
@@ -74,11 +76,12 @@ export default function ProductCard({
               image,
             });
           }}
+          aria-label={`Add ${name} to cart`}
         >
-          <ShoppingCart className="w-5 h-5" />
+          <ShoppingCart className="w-5 h-5" aria-hidden="true" />
           Add to Cart
         </button>
       </div>
-    </motion.div>
+    </motion.article>
   );
 }

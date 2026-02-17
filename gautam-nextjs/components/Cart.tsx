@@ -1,6 +1,7 @@
 'use client';
 
 import { useCart } from '@/lib/contexts/CartContext';
+import { useToast } from '@/lib/contexts/ToastContext';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +9,7 @@ import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 
 export default function Cart() {
   const router = useRouter();
+  const { showToast } = useToast();
   const {
     cart,
     cartCount,
@@ -34,7 +36,7 @@ export default function Cart() {
 
   const handleCheckout = () => {
     if (cart.length === 0) {
-      alert('Your cart is empty');
+      showToast('warning', 'Your cart is empty');
       return;
     }
     closeCart();

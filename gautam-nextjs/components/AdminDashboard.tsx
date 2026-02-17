@@ -56,7 +56,6 @@ interface DashboardStats {
 }
 
 export default function AdminDashboard() {
-  const { token } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -65,9 +64,7 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
       try {
         const response = await fetch('/api/admin/stats', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: 'include',
         });
 
         if (response.ok) {
@@ -81,10 +78,8 @@ export default function AdminDashboard() {
       }
     };
 
-    if (token) {
-      fetchStats();
-    }
-  }, [token]);
+    fetchStats();
+  }, []);
 
   if (loading) {
     return (
@@ -268,7 +263,7 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {activeTab === 'orders' && token && <OrdersTable token={token} />}
+        {activeTab === 'orders' && <OrdersTable />}
       </div>
     </div>
   );

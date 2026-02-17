@@ -1,10 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db/connect';
 import User from '@/lib/models/User';
-import { hashPassword, generateToken } from '@/lib/utils/auth';
+import { hashPassword, generateToken, setAuthCookie } from '@/lib/utils/auth';
+import { checkRateLimit, getClientIp, RateLimitPresets } from '@/lib/utils/rateLimit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: 3 registrations per hour per IP
+    const ip = getClientIp(request);
+    const rateLimitResult = checkRateLimit({
+      identifier: ip,
+      namespace: 'register',
+      ...RateLimitPresets.REGISTER,
+    });
+    
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: `Too many registration attempts. Please try again in ${Math.ceil(rateLimitResult.resetIn! / 60)} minutes.` 
+        },
+        { status: 429 }
+      );
+    }
+    
     await connectDB();
 
     const body = await request.json();
@@ -67,19 +86,17 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await hashPassword(password);
 
-    // Create user
+    // Create user with unverified email
     const user = await User.create({
       firstName,
       lastName,
       email: email.toLowerCase(),
       phone,
       password: hashedPassword,
+      isEmailVerified: false, // Require email verification
     });
 
-    // Generate token
-    const token = generateToken(user._id.toString());
-
-    // Return user data (without password)
+    // Return user data (without password) - do not auto-login
     const userResponse = {
       id: user._id,
       firstName: user.firstName,
@@ -87,17 +104,22 @@ export async function POST(request: NextRequest) {
       email: user.email,
       phone: user.phone,
       role: user.role,
+      isEmailVerified: user.isEmailVerified,
     };
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
-        message: 'Account created successfully',
+        message: 'Account created successfully. Please verify your email with the OTP sent to your inbox.',
         user: userResponse,
-        token,
+        requiresVerification: true,
       },
       { status: 201 }
     );
+    
+    // Do not set auth cookie - user must verify email first
+    
+    return response;
   } catch (error: any) {
     console.error('Registration error:', error);
     

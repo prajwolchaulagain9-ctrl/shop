@@ -13,50 +13,39 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   loading: boolean;
   register: (data: any) => Promise<any>;
   login: (email: string, password: string) => Promise<any>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in (token in localStorage)
-    const savedToken = localStorage.getItem('auth_token');
-    if (savedToken) {
-      setToken(savedToken);
-      fetchUser(savedToken);
-    } else {
-      setLoading(false);
-    }
+    // Check authentication status on mount (cookie will be sent automatically)
+    fetchUser();
   }, []);
 
-  const fetchUser = async (authToken: string) => {
+  const fetchUser = async () => {
     try {
       const response = await fetch('/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-        },
+        credentials: 'include', // Ensure cookies are sent
       });
       const data = await response.json();
       if (data.success) {
         setUser(data.user);
       } else {
-        localStorage.removeItem('auth_token');
-        setToken(null);
+        setUser(null);
       }
     } catch (error) {
       console.error('Error fetching user:', error);
-      localStorage.removeItem('auth_token');
-      setToken(null);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -69,14 +58,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Ensure cookies are sent/received
         body: JSON.stringify(data),
       });
       const result = await response.json();
 
       if (result.success) {
-        setToken(result.token);
         setUser(result.user);
-        localStorage.setItem('auth_token', result.token);
         return result;
       } else {
         throw new Error(result.message);
@@ -93,14 +81,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Ensure cookies are sent/received
         body: JSON.stringify({ email, password }),
       });
       const result = await response.json();
 
       if (result.success) {
-        setToken(result.token);
         setUser(result.user);
-        localStorage.setItem('auth_token', result.token);
         return result;
       } else {
         throw new Error(result.message);
@@ -110,22 +97,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('auth_token');
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include', // Ensure cookies are sent
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
         loading,
         register,
         login,
         logout,
-        isAuthenticated: !!user && !!token,
+        isAuthenticated: !!user,
+        refreshUser: fetchUser,
       }}
     >
       {children}

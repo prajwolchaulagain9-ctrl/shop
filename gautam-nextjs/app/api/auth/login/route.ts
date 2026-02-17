@@ -1,10 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db/connect';
 import User from '@/lib/models/User';
-import { comparePassword, generateToken } from '@/lib/utils/auth';
+import { comparePassword, generateToken, setAuthCookie } from '@/lib/utils/auth';
+import { checkRateLimit, getClientIp, RateLimitPresets } from '@/lib/utils/rateLimit';
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting: 5 attempts per 15 minutes per IP
+    const ip = getClientIp(request);
+    const rateLimitResult = checkRateLimit({
+      identifier: ip,
+      namespace: 'login',
+      ...RateLimitPresets.LOGIN,
+    });
+    
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: `Too many login attempts. Please try again in ${rateLimitResult.resetIn} seconds.` 
+        },
+        { status: 429 }
+      );
+    }
+    
     await connectDB();
 
     const body = await request.json();
@@ -35,6 +54,14 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    
+    // Check if email is verified
+    if (!user.isEmailVerified) {
+      return NextResponse.json(
+        { success: false, message: 'Please verify your email before logging in. Check your inbox for the OTP.' },
+        { status: 403 }
+      );
+    }
 
     // Generate token
     const token = generateToken(user._id.toString());
@@ -49,15 +76,19 @@ export async function POST(request: NextRequest) {
       role: user.role,
     };
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         message: 'Login successful',
         user: userResponse,
-        token,
       },
       { status: 200 }
     );
+    
+    // Set httpOnly cookie
+    setAuthCookie(response, token);
+    
+    return response;
   } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json(
