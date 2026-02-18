@@ -8,7 +8,7 @@ Complete guide to admin dashboard, authentication, and shopping features.
 
 ### Prerequisites
 - Must have completed initial setup from [SETUP_GUIDE.md](./SETUP_GUIDE.md)
-- Admin user created with: `npm run create-admin`
+- Admin user created with: `npm run create-admn`
 
 ### 3-Step Access
 
