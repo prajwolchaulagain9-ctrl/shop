@@ -71,7 +71,8 @@ export function getProductById(productId: string): Product | null {
  * Calculate order total from items
  */
 export interface OrderItem {
-  id: string;
+  id?: string;
+  productId?: string;
   name: string;
   price: string | number;
   quantity: number;
@@ -102,23 +103,33 @@ export function calculateOrderTotal(items: OrderItem[]): {
     }> = [];
     
     for (const item of items) {
+      const productId = item.id ?? item.productId;
+
+      if (!productId) {
+        return {
+          success: false,
+          total: 0,
+          error: 'Product ID missing from order item',
+        };
+      }
+
       // Validate quantity
       if (!item.quantity || item.quantity <= 0 || !Number.isInteger(item.quantity)) {
         return {
           success: false,
           total: 0,
-          error: `Invalid quantity for product ${item.id}`,
+          error: `Invalid quantity for product ${productId}`,
         };
       }
       
       // Get product from catalog
-      const product = products.get(item.id);
+      const product = products.get(productId);
       
       if (!product) {
         return {
           success: false,
           total: 0,
-          error: `Product not found: ${item.id}`,
+          error: `Product not found: ${productId}`,
         };
       }
       
@@ -127,7 +138,7 @@ export function calculateOrderTotal(items: OrderItem[]): {
       const subtotal = unitPrice * item.quantity;
       
       breakdown.push({
-        productId: item.id,
+        productId,
         productName: product.name,
         quantity: item.quantity,
         unitPrice,
