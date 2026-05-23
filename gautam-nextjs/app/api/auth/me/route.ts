@@ -48,10 +48,10 @@ export async function GET(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Auth check error:', error);
     return NextResponse.json(
-      { success: false, message: error.message || 'Auth check failed' },
+      { success: false, message: (error instanceof Error ? error.message : null) || 'Auth check failed' },
       { status: 500 }
     );
   }

@@ -2,7 +2,7 @@
  * Product pricing utilities
  */
 
-import { slippers, clothing } from '@/src/data/products';
+import { slippers, clothing, collections } from '@/src/data/products';
 
 export interface Product {
   id: string;
@@ -32,6 +32,11 @@ export function getAllProducts(): Map<string, Product> {
       productMap.set(item.id, { ...item, category: `clothing-${category}` });
     });
   });
+
+  // Add collections
+  collections.forEach((item) => {
+    productMap.set(item.id, { ...item, category: 'collections' });
+  });
   
   return productMap;
 }
@@ -41,8 +46,8 @@ export function getAllProducts(): Map<string, Product> {
  * Examples: "NPR 1200" -> 1200, "NPR 1,300" -> 1300
  */
 export function parsePrice(priceString: string): number {
-  // Remove currency prefix, commas, and whitespace
-  const numericString = priceString.replace(/[^\d]/g, '');
+  const match = priceString.match(/\d[\d,]*/);
+  const numericString = match ? match[0].replace(/,/g, '') : '';
   const price = parseInt(numericString, 10);
   
   if (isNaN(price)) {
@@ -160,4 +165,57 @@ export function calculateOrderTotal(items: OrderItem[]): {
       error: error instanceof Error ? error.message : 'Failed to calculate total',
     };
   }
+}
+
+/**
+ * Build trusted order items from the server catalog.
+ * Never persist client-supplied product names, prices, or image paths.
+ */
+export function buildValidatedOrderItems(items: OrderItem[]): {
+  success: boolean;
+  items: Array<{
+    productId: string;
+    name: string;
+    price: string;
+    image: string;
+    quantity: number;
+  }>;
+  error?: string;
+} {
+  const products = getAllProducts();
+  const validatedItems: Array<{
+    productId: string;
+    name: string;
+    price: string;
+    image: string;
+    quantity: number;
+  }> = [];
+
+  for (const item of items) {
+    const productId = item.id ?? item.productId;
+
+    if (!productId) {
+      return { success: false, items: [], error: 'Product ID missing from order item' };
+    }
+
+    if (!item.quantity || item.quantity <= 0 || !Number.isInteger(item.quantity)) {
+      return { success: false, items: [], error: `Invalid quantity for product ${productId}` };
+    }
+
+    const product = products.get(productId);
+
+    if (!product) {
+      return { success: false, items: [], error: `Product not found: ${productId}` };
+    }
+
+    validatedItems.push({
+      productId,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      quantity: item.quantity,
+    });
+  }
+
+  return { success: true, items: validatedItems };
 }

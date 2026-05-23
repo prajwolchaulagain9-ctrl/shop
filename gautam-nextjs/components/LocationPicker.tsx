@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useToast } from '@/lib/contexts/ToastContext';
 import dynamic from 'next/dynamic';
 import { MapPin, Search } from 'lucide-react';
@@ -39,25 +39,7 @@ export default function LocationPicker({ location, onLocationChange }: LocationP
   const defaultCenter: [number, number] = [27.7172, 85.3240];
   const center = position || defaultCenter;
 
-  useEffect(() => {
-    setMounted(true);
-    
-    // Try to get user's current location
-    if (!location && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const newPos: [number, number] = [pos.coords.latitude, pos.coords.longitude];
-          setPosition(newPos);
-          reverseGeocode(pos.coords.latitude, pos.coords.longitude);
-        },
-        (error) => {
-          console.log('Location access denied or unavailable');
-        }
-      );
-    }
-  }, [location]);
-
-  const reverseGeocode = async (lat: number, lng: number) => {
+  const reverseGeocode = useCallback(async (lat: number, lng: number) => {
     try {
       const response = await fetch(
         `/api/geocode/reverse?lat=${lat}&lon=${lng}`
@@ -82,7 +64,25 @@ export default function LocationPicker({ location, onLocationChange }: LocationP
       console.error('Reverse geocoding failed:', error);
       onLocationChange({ lat, lng });
     }
-  };
+  }, [onLocationChange]);
+
+  useEffect(() => {
+    setMounted(true);
+    
+    // Try to get user's current location
+    if (!location && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const newPos: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+          setPosition(newPos);
+          reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => {
+          console.log('Location access denied or unavailable');
+        }
+      );
+    }
+  }, [location, reverseGeocode]);
 
   const handlePositionChange = (newPosition: [number, number]) => {
     setPosition(newPosition);
@@ -132,7 +132,7 @@ export default function LocationPicker({ location, onLocationChange }: LocationP
           setPosition(newPos);
           reverseGeocode(pos.coords.latitude, pos.coords.longitude);
         },
-        (error) => {
+        () => {
           showToast('error', 'Unable to get your location. Please enable location services.');
         }
       );

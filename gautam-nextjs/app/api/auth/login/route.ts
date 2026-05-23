@@ -89,10 +89,10 @@ export async function POST(request: NextRequest) {
     setAuthCookie(response, token);
     
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { success: false, message: error.message || 'Login failed' },
+      { success: false, message: (error instanceof Error ? error.message : null) || 'Login failed' },
       { status: 500 }
     );
   }

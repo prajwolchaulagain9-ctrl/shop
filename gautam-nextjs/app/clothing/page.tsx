@@ -6,29 +6,29 @@ import { motion } from 'framer-motion';
 
 export default function ClothingPage() {
   const sections = [
-    { id: 'newar', title: 'Krishna and Radha Sets', products: clothing.krishnaRadha },
-    { id: 'Pasni', title: 'Pasni Clothes', products: clothing.pasni },
-    { id: 'Daura', title: 'Daura Suruwal', products: clothing.daura },
-    { id: 'sada', title: 'Plain Kurta', products: clothing.plainKurta },
-    { id: 'special', title: 'Chicken Kadai Kurta Set', products: clothing.specialKurta },
-    { id: 'gunyo', title: 'Gunyu Choli & Girls Kurta', products: clothing.gunya },
+    { id: 'krishna-radha', title: 'Krishna and Radha Sets', products: clothing.krishnaRadha },
+    { id: 'pasni', title: 'Pasni Clothes', products: clothing.pasni },
+    { id: 'daura', title: 'Daura Suruwal', products: clothing.daura },
+    { id: 'plain-kurta', title: 'Plain Kurta', products: clothing.plainKurta },
+    { id: 'chicken-kadai', title: 'Chicken Kadai Kurta Set', products: clothing.specialKurta },
+    { id: 'gunyu', title: 'Gunyu Choli & Girls Kurta', products: clothing.gunya },
   ];
 
   return (
-    <main className="min-h-screen pt-24">
+    <main className="min-h-screen bg-[#fbfaf7] pt-20">
       {/* Hero */}
-      <section className="bg-gradient-to-r from-red-900 to-red-700 text-white py-16 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-red-950 px-4 py-14 text-white sm:px-6 sm:py-20 lg:px-8">
+        <div className="mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <h1 className="font-playfair text-5xl md:text-6xl font-bold mb-4">
+            <h1 className="mb-4 font-playfair text-4xl font-bold leading-tight sm:text-6xl">
               Traditional Clothing
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            <p className="mx-auto max-w-2xl text-base leading-7 text-white/85 sm:text-xl">
               Authentic Nepalese garments celebrating our rich cultural heritage. Explore our complete collection.
             </p>
           </motion.div>
@@ -40,25 +40,22 @@ export default function ClothingPage() {
         <section
           key={section.id}
           id={section.id}
-          className={`py-24 px-6 ${sectionIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+          className={`px-4 py-16 sm:px-6 sm:py-24 lg:px-8 ${sectionIdx % 2 === 0 ? 'bg-[#fbfaf7]' : 'bg-white'}`}
         >
-          <div className="max-w-7xl mx-auto">
+          <div className="mx-auto max-w-7xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true, amount: 0.2 }}
-              className="text-center mb-16"
+              className="mb-10 text-center sm:mb-14"
             >
-              <h2 className="font-playfair text-4xl font-bold text-red-900 mb-4">
+              <h2 className="mb-4 font-playfair text-3xl font-bold leading-tight text-red-950 sm:text-4xl">
                 {section.title}
               </h2>
-              <div className="flex justify-center mb-6">
-                <div className="w-16 h-1 bg-gradient-to-r from-amber-500 to-amber-700"></div>
-              </div>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
               {section.products.map((product, idx) => (
                 <ProductCard key={product.id} {...product} index={idx} />
               ))}

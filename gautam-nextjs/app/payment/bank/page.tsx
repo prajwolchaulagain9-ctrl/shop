@@ -16,10 +16,10 @@ function BankPaymentContent() {
   const [copied, setCopied] = useState('');
 
   const bankDetails = {
-    bankName: 'Your Bank Name',
-    accountName: 'Your Store Name',
-    accountNumber: '1234567890',
-    branchName: 'Main Branch',
+    bankName: process.env.NEXT_PUBLIC_BANK_NAME || 'Configure bank name',
+    accountName: process.env.NEXT_PUBLIC_BANK_ACCOUNT_NAME || 'Configure account name',
+    accountNumber: process.env.NEXT_PUBLIC_BANK_ACCOUNT_NUMBER || 'Configure account number',
+    branchName: process.env.NEXT_PUBLIC_BANK_BRANCH || 'Configure branch',
   };
 
   const copyToClipboard = (text: string, field: string) => {
@@ -29,6 +29,11 @@ function BankPaymentContent() {
   };
 
   const handleSubmit = async () => {
+    if (!orderId) {
+      showToast('error', 'Order ID is missing');
+      return;
+    }
+
     if (!transactionId.trim()) {
       showToast('error', 'Please enter your transaction ID');
       return;
@@ -63,13 +68,13 @@ function BankPaymentContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-8">
+    <div className="min-h-screen bg-[#fbfaf7] px-4 py-24 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl">
+        <div className="rounded-lg border border-red-950/10 bg-white p-5 shadow-xl sm:p-8">
           <div className="flex items-center gap-3 mb-6">
             <Building2 className="w-10 h-10 text-blue-600" />
             <div>
-              <h1 className="text-3xl font-playfair font-bold text-red-900">
+              <h1 className="font-playfair text-3xl font-bold text-red-950">
                 Bank Transfer
               </h1>
               <p className="text-sm text-gray-600">Order ID: {orderId}</p>
@@ -77,12 +82,12 @@ function BankPaymentContent() {
           </div>
 
           <div className="mb-8">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+            <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-5 sm:p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Bank Account Details
               </h2>
               <div className="space-y-3">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Bank Name</p>
                     <p className="font-semibold text-gray-900">{bankDetails.bankName}</p>
@@ -99,7 +104,7 @@ function BankPaymentContent() {
                     )}
                   </button>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Account Name</p>
                     <p className="font-semibold text-gray-900">{bankDetails.accountName}</p>
@@ -116,7 +121,7 @@ function BankPaymentContent() {
                     )}
                   </button>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Account Number</p>
                     <p className="font-semibold text-gray-900 text-lg">{bankDetails.accountNumber}</p>
@@ -133,7 +138,7 @@ function BankPaymentContent() {
                     )}
                   </button>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Branch</p>
                     <p className="font-semibold text-gray-900">{bankDetails.branchName}</p>
@@ -153,13 +158,13 @@ function BankPaymentContent() {
               </div>
             </div>
 
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+            <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
               <h3 className="font-semibold text-amber-900 mb-2">Instructions:</h3>
               <ol className="list-decimal list-inside space-y-1 text-sm text-amber-800">
                 <li>Transfer the exact amount to the account above</li>
                 <li>Keep your transaction receipt or ID</li>
                 <li>Enter your transaction ID below</li>
-                <li>We'll verify and process your order within 24 hours</li>
+                <li>We&apos;ll verify and process your order within 24 hours</li>
               </ol>
             </div>
 
@@ -170,9 +175,10 @@ function BankPaymentContent() {
               <input
                 type="text"
                 value={transactionId}
-                onChange={(e) => setTransactionId(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-900 focus:border-transparent"
+                onChange={(e) => setTransactionId(e.target.value.slice(0, 120))}
+                className="w-full rounded-lg border border-stone-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-red-950"
                 placeholder="Enter your transaction ID"
+                autoComplete="off"
               />
               <p className="text-xs text-gray-500 mt-1">
                 This is the reference number you received from your bank after making the transfer
@@ -183,16 +189,16 @@ function BankPaymentContent() {
           <div className="space-y-3">
             <button
               onClick={handleSubmit}
-              disabled={loading || !transactionId.trim()}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || !transactionId.trim() || !orderId}
+              className="w-full rounded-full bg-[#17653c] py-4 font-bold text-white transition-colors hover:bg-[#124f30] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? 'Submitting...' : 'Submit Payment Details'}
             </button>
             <button
               onClick={() => router.push('/')}
-              className="w-full bg-white hover:bg-gray-100 text-red-900 border border-red-900 font-semibold py-3 rounded-lg transition-colors"
+              className="w-full rounded-full border border-red-950 bg-white py-3 font-bold text-red-950 transition-colors hover:bg-red-50"
             >
-              I'll Submit Later
+              I&apos;ll Submit Later
             </button>
           </div>
         </div>

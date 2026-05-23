@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db/connect';
 import User from '@/lib/models/User';
-import { hashPassword, generateToken, setAuthCookie } from '@/lib/utils/auth';
+import { hashPassword } from '@/lib/utils/auth';
 import { checkRateLimit, getClientIp, RateLimitPresets } from '@/lib/utils/rateLimit';
 
 export async function POST(request: NextRequest) {
@@ -120,13 +120,13 @@ export async function POST(request: NextRequest) {
     // Do not set auth cookie - user must verify email first
     
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Registration error:', error);
     
     // Don't expose detailed error messages in production
     const errorMessage = process.env.NODE_ENV === 'production'
       ? 'Registration failed. Please try again.'
-      : error.message || 'Registration failed';
+      : (error instanceof Error ? error.message : null) || 'Registration failed';
     
     return NextResponse.json(
       { success: false, message: errorMessage },

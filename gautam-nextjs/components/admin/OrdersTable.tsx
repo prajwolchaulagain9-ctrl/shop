@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ChevronDown, RefreshCw } from 'lucide-react';
 
 interface OrderItem {
@@ -45,7 +45,7 @@ export default function OrdersTable() {
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -68,11 +68,11 @@ export default function OrdersTable() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, status]);
 
   useEffect(() => {
     fetchOrders();
-  }, [status, page]);
+  }, [status, page, fetchOrders]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {

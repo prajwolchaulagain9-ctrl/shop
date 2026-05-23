@@ -3,11 +3,19 @@ import connectDB from '@/lib/db/connect';
 import Order from '@/lib/models/Order';
 import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
-import crypto from 'crypto';
-import { calculateOrderTotal } from '@/lib/utils/pricing';
+import { buildValidatedOrderItems, calculateOrderTotal } from '@/lib/utils/pricing';
+import { requireAuth } from '@/lib/middleware/auth';
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireAuth(req);
+    if (!auth) {
+      return NextResponse.json(
+        { success: false, message: 'Please login to start payment' },
+        { status: 401 }
+      );
+    }
+
     await connectDB();
 
     const { items, totalAmount, paymentMethod, customerDetails } = await req.json();
@@ -46,6 +54,14 @@ export async function POST(req: NextRequest) {
     }
     
     const validatedTotal = serverTotal;
+    const validatedItems = buildValidatedOrderItems(items);
+
+    if (!validatedItems.success) {
+      return NextResponse.json(
+        { success: false, message: validatedItems.error || 'Invalid order items' },
+        { status: 400 }
+      );
+    }
 
     if (!['esewa', 'khalti', 'bank'].includes(paymentMethod)) {
       return NextResponse.json(
@@ -70,8 +86,9 @@ export async function POST(req: NextRequest) {
 
     // Create order with pending payment
     const order = new Order({
+      userId: auth.userId,
       sessionId,
-      items,
+      items: validatedItems.items,
       totalAmount: validatedTotal, // Use server-calculated total
       paymentMethod,
       paymentStatus: 'pending',
@@ -95,19 +112,19 @@ export async function POST(req: NextRequest) {
         );
       }
       
-      const esewaConfig = {
-        amt: validatedTotal,
-        psc: 0,
-        pdc: 0,
-        txAmt: 0,
-        tAmt: validatedTotal,
+      const esewaConfig: Record<string, string> = {
+        amt: String(validatedTotal),
+        psc: '0',
+        pdc: '0',
+        txAmt: '0',
+        tAmt: String(validatedTotal),
         pid: orderId,
         scd: process.env.ESEWA_MERCHANT_CODE,
         su: `${baseUrl}/api/payment/verify/esewa?q=su&oid=${orderId}`,
         fu: `${baseUrl}/api/payment/verify/esewa?q=fu&oid=${orderId}`,
       };
 
-      const params = new URLSearchParams(esewaConfig as any).toString();
+      const params = new URLSearchParams(esewaConfig).toString();
       paymentUrl = `https://uat.esewa.com.np/epay/main?${params}`;
       
     } else if (paymentMethod === 'khalti') {
@@ -168,7 +185,13 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json(
       { 
         success: true, 
-        order,
+        order: {
+          _id: order._id,
+          totalAmount: order.totalAmount,
+          paymentMethod: order.paymentMethod,
+          paymentStatus: order.paymentStatus,
+          orderStatus: order.orderStatus,
+        },
         paymentUrl,
         message: 'Payment initiated successfully' 
       },

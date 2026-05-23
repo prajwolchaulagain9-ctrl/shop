@@ -43,10 +43,10 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Token refresh error:', error);
     return NextResponse.json(
-      { success: false, message: error.message || 'Token refresh failed' },
+      { success: false, message: (error instanceof Error ? error.message : null) || 'Token refresh failed' },
       { status: 500 }
     );
   }

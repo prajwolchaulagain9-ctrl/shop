@@ -40,7 +40,7 @@ export default function Footer() {
               Gautam Lady Shoes
             </h3>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Preserving Nepal's traditional craftsmanship for future generations.
+              Preserving Nepal&apos;s traditional craftsmanship for future generations.
             </p>
           </motion.div>
 
@@ -75,7 +75,7 @@ export default function Footer() {
           <motion.div variants={itemVariants}>
             <h4 className="font-playfair font-bold text-amber-400 mb-4">Follow Our Journey</h4>
             <p className="text-gray-400 text-sm">
-              Stay connected with our latest collections and stories from Nepal's artisan communities.
+              Stay connected with our latest collections and stories from Nepal&apos;s artisan communities.
             </p>
           </motion.div>
 

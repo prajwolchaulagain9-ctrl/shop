@@ -9,7 +9,6 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const pidx = searchParams.get('pidx');
     const txnId = searchParams.get('transaction_id');
-    const amount = searchParams.get('amount');
     const status = searchParams.get('status');
     const purchaseOrderId = searchParams.get('purchase_order_id');
 

@@ -3,6 +3,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ChevronDown,
+  Facebook,
+  Home,
+  Instagram,
+  Phone,
+  Shirt,
+  Sparkles,
+  X,
+} from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -41,12 +51,12 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
   const menuItems = [
     {
-      icon: '🏠',
+      icon: Home,
       label: 'Home',
       href: '/',
     },
     {
-      icon: '👡',
+      icon: Sparkles,
       label: 'Slippers',
       href: '/slippers',
       submenu: [
@@ -57,7 +67,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       ],
     },
     {
-      icon: '👗',
+      icon: Shirt,
       label: 'Clothing',
       href: '/clothing',
       submenu: [
@@ -70,17 +80,17 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       ],
     },
     {
-      icon: '✨',
+      icon: Sparkles,
       label: 'Collections',
       href: '/collections',
     },
     {
-      icon: 'ℹ️',
+      icon: Phone,
       label: 'About',
       href: '/#about',
     },
     {
-      icon: '📞',
+      icon: Phone,
       label: 'Contact',
       href: '/#contact',
     },
@@ -96,7 +106,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[999]"
+            className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm"
           />
         )}
       </AnimatePresence>
@@ -106,20 +116,20 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         initial={{ x: -320 }}
         animate={{ x: isOpen ? 0 : -320 }}
         transition={{ type: 'spring', damping: 25, stiffness: 120 }}
-        className="fixed top-0 left-0 w-80 h-screen bg-gradient-to-b from-red-900 to-red-800 backdrop-blur-xl z-[1000] flex flex-col shadow-2xl"
+        className="fixed left-0 top-0 z-[1000] flex h-[100svh] w-[min(20rem,86vw)] flex-col bg-gradient-to-b from-red-950 to-red-900 shadow-2xl backdrop-blur-xl"
       >
         {/* Header */}
-        <div className="border-b border-yellow-600/30 p-6 flex items-center justify-between">
+        <div className="flex items-center justify-between border-b border-white/10 p-6">
           <div className="flex flex-col">
-            <h2 className="text-2xl font-bold text-yellow-500 font-playfair">Gautam Lady</h2>
-            <p className="text-yellow-400 text-xs">Shoes</p>
+            <h2 className="font-playfair text-2xl font-bold text-amber-300">Gautam Lady</h2>
+            <p className="text-xs text-amber-100/70">Shoes</p>
           </div>
           <button
             onClick={onClose}
-            className="text-yellow-500 text-3xl hover:text-yellow-400 transition-colors p-2 rounded-full hover:bg-yellow-500/10"
+            className="rounded-full p-2 text-3xl text-amber-300 transition-colors hover:bg-white/10 hover:text-white"
             aria-label="Close sidebar"
           >
-            ×
+            <X className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
 
@@ -137,17 +147,17 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 <div>
                   <button
                     onClick={() => toggleSubmenu(item.label)}
-                    className="w-full flex items-center justify-between px-4 py-3 rounded-lg text-white hover:bg-yellow-600/15 transition-all group"
+                    className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-white transition-colors hover:bg-white/10"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-lg">{item.icon}</span>
+                      <item.icon className="h-5 w-5 text-amber-300" aria-hidden="true" />
                       <span className="font-medium">{item.label}</span>
                     </div>
                     <motion.span
                       animate={{ rotate: expandedMenu === item.label ? 180 : 0 }}
                       className="text-sm"
                     >
-                      ▼
+                      <ChevronDown className="h-4 w-4" aria-hidden="true" />
                     </motion.span>
                   </button>
 
@@ -166,7 +176,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                               <Link
                                 href={subitem.href}
                                 onClick={handleLinkClick}
-                                className="block px-4 py-2 text-sm text-white/80 hover:text-yellow-400 hover:bg-yellow-600/10 rounded transition-colors"
+                                className="block rounded px-4 py-2 text-sm text-white/78 transition-colors hover:bg-white/10 hover:text-amber-300"
                               >
                                 {subitem.label}
                               </Link>
@@ -181,9 +191,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 <Link
                   href={item.href}
                   onClick={handleLinkClick}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-white hover:bg-yellow-600/15 hover:text-yellow-400 transition-all group"
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-white transition-colors hover:bg-white/10 hover:text-amber-300"
                 >
-                  <span className="text-lg">{item.icon}</span>
+                  <item.icon className="h-5 w-5 text-amber-300" aria-hidden="true" />
                   <span className="font-medium">{item.label}</span>
                 </Link>
               )}
@@ -192,19 +202,19 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         </ul>
 
         {/* Footer */}
-        <div className="border-t border-yellow-600/30 p-4 space-y-4">
+        <div className="space-y-4 border-t border-white/10 p-4">
           <div className="flex justify-center gap-4">
-            <a href="#" className="text-white hover:text-yellow-400 text-lg transition-colors" aria-label="Facebook">
-              📘
+            <a href="#" className="rounded-full p-2 text-white transition-colors hover:bg-white/10 hover:text-amber-300" aria-label="Facebook">
+              <Facebook className="h-5 w-5" aria-hidden="true" />
             </a>
-            <a href="#" className="text-white hover:text-yellow-400 text-lg transition-colors" aria-label="Instagram">
-              📷
+            <a href="#" className="rounded-full p-2 text-white transition-colors hover:bg-white/10 hover:text-amber-300" aria-label="Instagram">
+              <Instagram className="h-5 w-5" aria-hidden="true" />
             </a>
-            <a href="#" className="text-white hover:text-yellow-400 text-lg transition-colors" aria-label="Twitter">
-              🐦
+            <a href="#" className="rounded-full p-2 text-white transition-colors hover:bg-white/10 hover:text-amber-300" aria-label="Phone">
+              <Phone className="h-5 w-5" aria-hidden="true" />
             </a>
           </div>
-          <p className="text-center text-xs text-white/60">© 2024 Gautam Lady Shoes</p>
+          <p className="text-center text-xs text-white/60">Gautam Lady Shoes</p>
         </div>
       </motion.nav>
     </>

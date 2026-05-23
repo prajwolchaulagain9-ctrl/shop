@@ -3,10 +3,19 @@ import connectDB from '@/lib/db/connect';
 import Order from '@/lib/models/Order';
 import { cookies } from 'next/headers';
 import { v4 as uuidv4 } from 'uuid';
-import { calculateOrderTotal } from '@/lib/utils/pricing';
+import { buildValidatedOrderItems, calculateOrderTotal } from '@/lib/utils/pricing';
+import { requireAuth } from '@/lib/middleware/auth';
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireAuth(req);
+    if (!auth) {
+      return NextResponse.json(
+        { success: false, message: 'Please login to place an order' },
+        { status: 401 }
+      );
+    }
+
     await connectDB();
 
     const { items, totalAmount, paymentMethod, customerDetails } = await req.json();
@@ -53,10 +62,18 @@ export async function POST(req: NextRequest) {
     
     // Use server-calculated total
     const validatedTotal = serverTotal;
+    const validatedItems = buildValidatedOrderItems(items);
 
-    if (!paymentMethod) {
+    if (!validatedItems.success) {
       return NextResponse.json(
-        { success: false, message: 'Payment method is required' },
+        { success: false, message: validatedItems.error || 'Invalid order items' },
+        { status: 400 }
+      );
+    }
+
+    if (paymentMethod !== 'cod') {
+      return NextResponse.json(
+        { success: false, message: 'Invalid payment method for direct order creation' },
         { status: 400 }
       );
     }
@@ -77,8 +94,9 @@ export async function POST(req: NextRequest) {
 
     // Create order
     const order = new Order({
+      userId: auth.userId,
       sessionId,
-      items,
+      items: validatedItems.items,
       totalAmount: validatedTotal, // Use server-calculated total
       paymentMethod,
       paymentStatus: paymentMethod === 'cod' ? 'verified' : 'pending',
@@ -91,7 +109,13 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json(
       { 
         success: true, 
-        order,
+        order: {
+          _id: order._id,
+          totalAmount: order.totalAmount,
+          paymentMethod: order.paymentMethod,
+          paymentStatus: order.paymentStatus,
+          orderStatus: order.orderStatus,
+        },
         message: `Order placed successfully with ${paymentMethod.toUpperCase()}` 
       },
       { status: 201 }

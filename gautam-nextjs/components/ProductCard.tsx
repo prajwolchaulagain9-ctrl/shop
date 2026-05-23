@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useCart } from '@/lib/contexts/CartContext';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Sparkles } from 'lucide-react';
 
 interface ProductCardProps {
   id: string;
@@ -31,43 +31,49 @@ export default function ProductCard({
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: (index % 3) * 0.1 }}
       viewport={{ once: true, amount: 0.2 }}
-      whileHover={{ y: -8 }}
-      className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full"
+      whileHover={{ y: -5 }}
+      className="group flex h-full flex-col overflow-hidden rounded-lg border border-red-950/10 bg-white shadow-[0_14px_40px_rgba(58,15,12,0.08)] transition-shadow duration-300 hover:shadow-[0_22px_56px_rgba(58,15,12,0.15)]"
       suppressHydrationWarning
     >
       {/* Image Container */}
       <div 
-        className="relative h-72 overflow-hidden bg-gray-100"
+        className="relative aspect-[4/3] overflow-hidden bg-stone-100 sm:aspect-[5/4]"
         suppressHydrationWarning
       >
         <Image
           src={image}
           alt={name}
           fill
-          className="object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
           priority={index === 0}
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-80" />
+        <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/92 px-3 py-1.5 text-xs font-bold text-red-950 shadow-sm backdrop-blur">
+          <Sparkles className="h-3.5 w-3.5 text-amber-600" aria-hidden="true" />
+          Handmade
+        </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col p-6">
-        <h3 className="font-playfair text-lg font-semibold text-red-900 mb-3">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <h3 className="mb-2 font-playfair text-xl font-bold leading-snug text-red-950">
           {name}
         </h3>
 
         {description && (
-          <p className="text-gray-600 text-sm leading-relaxed mb-4 flex-1">
+          <p className="mb-4 line-clamp-3 flex-1 text-sm leading-6 text-stone-600">
             {description}
           </p>
         )}
 
-        <div className="text-xl font-semibold bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent">
+        <div className="text-xl font-black text-red-900">
           {price}
         </div>
 
         {/* Add to Cart Button */}
         <button 
-          className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#17653c] px-5 py-3.5 font-bold text-white shadow-md shadow-green-950/10 transition-colors duration-300 hover:bg-[#124f30]"
           onClick={() => {
             addToCart({
               productId: id,

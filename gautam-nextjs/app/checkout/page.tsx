@@ -6,7 +6,7 @@ import { useToast } from '@/lib/contexts/ToastContext';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { CreditCard, Wallet, Building2, DollarSign, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Wallet, Building2, DollarSign, ArrowLeft, CheckCircle, ShieldCheck } from 'lucide-react';
 import LocationPicker from '@/components/LocationPicker';
 import 'leaflet/dist/leaflet.css';
 
@@ -173,50 +173,50 @@ export default function CheckoutPage() {
       name: 'Cash on Delivery',
       icon: DollarSign,
       description: 'Pay when you receive the product',
-      color: 'green',
+      iconClassName: 'text-green-700 bg-green-50',
     },
     {
       id: 'esewa',
       name: 'eSewa',
       icon: Wallet,
       description: 'Pay with eSewa wallet',
-      color: 'green',
+      iconClassName: 'text-green-700 bg-green-50',
     },
     {
       id: 'khalti',
       name: 'Khalti',
       icon: Wallet,
       description: 'Pay with Khalti wallet',
-      color: 'purple',
+      iconClassName: 'text-purple-700 bg-purple-50',
     },
     {
       id: 'bank',
       name: 'Bank Transfer',
       icon: Building2,
       description: 'Pay via online banking',
-      color: 'blue',
+      iconClassName: 'text-blue-700 bg-blue-50',
     },
   ];
 
   if (orderSuccess) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-[#fbfaf7] p-4">
+        <div className="w-full max-w-md rounded-lg border border-red-950/10 bg-white p-8 text-center shadow-xl">
           <div className="mb-6">
             <CheckCircle className="w-20 h-20 text-green-600 mx-auto" />
           </div>
-          <h1 className="text-3xl font-playfair font-bold text-red-900 mb-4">
+          <h1 className="mb-4 font-playfair text-3xl font-bold text-red-950">
             Order Placed Successfully!
           </h1>
           <p className="text-gray-600 mb-2">
             Your order ID: <span className="font-semibold">{orderId}</span>
           </p>
           <p className="text-gray-600 mb-6">
-            Thank you for your order. We'll process it shortly.
+            Thank you for your order. We&apos;ll process it shortly.
           </p>
           <button
             onClick={() => router.push('/')}
-            className="w-full bg-red-900 hover:bg-red-800 text-white font-semibold py-3 rounded-lg transition-colors"
+            className="w-full rounded-full bg-red-950 py-3 font-bold text-white transition-colors hover:bg-red-900"
           >
             Continue Shopping
           </button>
@@ -226,26 +226,30 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#fbfaf7] px-4 py-24 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-red-900 hover:text-red-700 mb-4"
+            className="mb-4 inline-flex items-center gap-2 rounded-full text-red-950 hover:text-red-700"
           >
             <ArrowLeft className="w-5 h-5" />
             Back to Cart
           </button>
-          <h1 className="text-4xl font-playfair font-bold text-red-900">Checkout</h1>
+          <h1 className="font-playfair text-4xl font-bold text-red-950">Checkout</h1>
+          <p className="mt-2 flex items-center gap-2 text-sm text-stone-600">
+            <ShieldCheck className="h-4 w-4 text-green-700" aria-hidden="true" />
+            Totals are verified on the server before the order is created.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           {/* Left Column - Forms */}
           <div className="lg:col-span-2 space-y-6">
             {/* Customer Details */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-playfair font-bold text-red-900 mb-4">
+            <div className="rounded-lg border border-red-950/10 bg-white p-5 shadow-sm sm:p-6">
+              <h2 className="mb-4 font-playfair text-2xl font-bold text-red-950">
                 Delivery Information
               </h2>
               <div className="space-y-4">
@@ -258,8 +262,9 @@ export default function CheckoutPage() {
                     name="name"
                     value={customerDetails.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-900 focus:border-transparent"
+                    className="w-full rounded-lg border border-stone-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-red-950"
                     placeholder="Enter your full name"
+                    autoComplete="name"
                   />
                 </div>
                 <div>
@@ -271,8 +276,9 @@ export default function CheckoutPage() {
                     name="email"
                     value={customerDetails.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-900 focus:border-transparent"
+                    className="w-full rounded-lg border border-stone-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-red-950"
                     placeholder="Enter your email"
+                    autoComplete="email"
                   />
                 </div>
                 <div>
@@ -284,8 +290,9 @@ export default function CheckoutPage() {
                     name="phone"
                     value={customerDetails.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-900 focus:border-transparent"
+                    className="w-full rounded-lg border border-stone-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-red-950"
                     placeholder="Enter your phone number"
+                    autoComplete="tel"
                   />
                 </div>
                 <div>
@@ -297,8 +304,9 @@ export default function CheckoutPage() {
                     value={customerDetails.address}
                     onChange={handleInputChange}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-900 focus:border-transparent mb-4"
+                    className="mb-4 w-full rounded-lg border border-stone-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-red-950"
                     placeholder="Enter your complete delivery address (house/flat no, street, landmark)"
+                    autoComplete="street-address"
                   />
                   
                   {/* Location Picker */}
@@ -321,25 +329,27 @@ export default function CheckoutPage() {
             </div>
 
             {/* Payment Methods */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-playfair font-bold text-red-900 mb-4">
+            <div className="rounded-lg border border-red-950/10 bg-white p-5 shadow-sm sm:p-6">
+              <h2 className="mb-4 font-playfair text-2xl font-bold text-red-950">
                 Payment Method
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                 {paymentMethods.map((method) => {
                   const Icon = method.icon;
                   return (
                     <button
                       key={method.id}
-                      onClick={() => setSelectedPayment(method.id as any)}
-                      className={`p-4 border-2 rounded-lg transition-all ${
+                      onClick={() => setSelectedPayment(method.id as 'cod' | 'esewa' | 'khalti' | 'bank')}
+                      className={`rounded-lg border-2 p-4 text-left transition-all ${
                         selectedPayment === method.id
-                          ? 'border-red-900 bg-red-50'
-                          : 'border-gray-300 hover:border-red-300'
+                          ? 'border-red-950 bg-red-50 shadow-sm'
+                          : 'border-stone-200 hover:border-red-300'
                       }`}
                     >
                       <div className="flex items-start gap-3">
-                        <Icon className={`w-6 h-6 flex-shrink-0 text-${method.color}-600`} />
+                        <span className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg ${method.iconClassName}`}>
+                          <Icon className="h-5 w-5" />
+                        </span>
                         <div className="text-left">
                           <h3 className="font-semibold text-gray-900">{method.name}</h3>
                           <p className="text-sm text-gray-600">{method.description}</p>
@@ -354,8 +364,8 @@ export default function CheckoutPage() {
 
           {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow p-6 sticky top-8">
-              <h2 className="text-2xl font-playfair font-bold text-red-900 mb-4">
+            <div className="sticky top-24 rounded-lg border border-red-950/10 bg-white p-5 shadow-sm sm:p-6">
+              <h2 className="mb-4 font-playfair text-2xl font-bold text-red-950">
                 Order Summary
               </h2>
               
@@ -363,7 +373,7 @@ export default function CheckoutPage() {
               <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
                 {cart.map((item) => (
                   <div key={item.productId} className="flex gap-3">
-                    <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-stone-100">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -392,7 +402,7 @@ export default function CheckoutPage() {
                   <span>Delivery</span>
                   <span>FREE</span>
                 </div>
-                <div className="flex justify-between text-xl font-bold text-red-900 pt-2 border-t border-gray-200">
+                <div className="flex justify-between border-t border-gray-200 pt-2 text-xl font-bold text-red-950">
                   <span>Total</span>
                   <span>{formatPrice(calculateTotal())}</span>
                 </div>
@@ -401,7 +411,7 @@ export default function CheckoutPage() {
               <button
                 onClick={handlePlaceOrder}
                 disabled={loading || !selectedPayment}
-                className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-6 w-full rounded-full bg-[#17653c] py-4 font-bold text-white transition-colors hover:bg-[#124f30] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? 'Processing...' : 'Place Order'}
               </button>

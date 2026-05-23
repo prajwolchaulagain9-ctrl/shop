@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
 
-    const filter: any = {};
+    const filter: Record<string, string> = {};
     if (status) {
       filter.orderStatus = status;
     }
@@ -60,7 +60,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
     }
 
-    const updateData: any = {};
+    const updateData: Record<string, string> = {};
     if (orderStatus) updateData.orderStatus = orderStatus;
     if (paymentStatus) updateData.paymentStatus = paymentStatus;
 

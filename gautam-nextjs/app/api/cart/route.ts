@@ -10,7 +10,7 @@ export async function GET() {
     await connectDB();
 
     const cookieStore = await cookies();
-    let sessionId = cookieStore.get('cart_session_id')?.value;
+    const sessionId = cookieStore.get('cart_session_id')?.value;
 
     if (!sessionId) {
       return NextResponse.json(

@@ -49,7 +49,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             </h1>
             
             <p className="text-gray-600 mb-6">
-              We're sorry, but an unexpected error occurred. Please try refreshing the page.
+              We&apos;re sorry, but an unexpected error occurred. Please try refreshing the page.
             </p>
             
             {process.env.NODE_ENV === 'development' && this.state.error && (

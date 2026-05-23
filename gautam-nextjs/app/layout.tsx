@@ -1,20 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
 import RootLayoutClient from "@/components/RootLayoutClient";
 import "@/lib/utils/validateEnv"; // Validate environment variables on server startup
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
-const lato = Lato({
-  variable: "--font-lato",
-  subsets: ["latin"],
-  weight: ["300", "400", "700"],
-});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -77,7 +64,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${lato.variable} antialiased bg-white text-gray-900`}
+        className="antialiased bg-white text-gray-900"
       >
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>

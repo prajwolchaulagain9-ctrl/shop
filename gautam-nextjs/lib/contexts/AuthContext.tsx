@@ -11,11 +11,27 @@ interface User {
   role: string;
 }
 
+interface RegistrationData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  password: string;
+  confirmPassword?: string;
+}
+
+interface AuthResponse {
+  success: boolean;
+  user?: User;
+  message?: string;
+  token?: string;
+}
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  register: (data: any) => Promise<any>;
-  login: (email: string, password: string) => Promise<any>;
+  register: (data: RegistrationData) => Promise<AuthResponse>;
+  login: (email: string, password: string) => Promise<AuthResponse>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   refreshUser: () => Promise<void>;
@@ -51,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const register = async (data: any) => {
+  const register = async (data: RegistrationData): Promise<AuthResponse> => {
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',

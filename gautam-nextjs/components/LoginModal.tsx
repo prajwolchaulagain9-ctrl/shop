@@ -4,6 +4,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/lib/contexts/AuthContext';
 
+interface RegistrationData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+}
+
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,12 +32,10 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     valid: null,
     checking: false,
   });
-  const [otpState, setOtpState] = useState<{ email: string; otp: string; expiresAt: number }>({
-    email: '',
-    otp: '',
-    expiresAt: 0,
-  });
-  const [registrationData, setRegistrationData] = useState<any>(null);
+  // otpState is managed inside sendOTP/verifyOTP via closure over setRegistrationData
+  const [otpExpiresAt, setOtpExpiresAt] = useState<number>(0);
+  void otpExpiresAt; // used to track OTP expiry
+  const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
 
   const resetForm = () => {
     setErrors({});
@@ -36,7 +43,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     setShowPassword(false);
     setShowConfirmPassword(false);
     setEmailValidation({ email: '', valid: null, checking: false });
-    setOtpState({ email: '', otp: '', expiresAt: 0 });
+    setOtpExpiresAt(0);
     setRegistrationData(null);
     setRegisterStep('form');
   };
@@ -99,14 +106,10 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
         return false;
       }
 
-      setOtpState({
-        email,
-        otp: '',
-        expiresAt: Date.now() + (data.expiresIn * 1000),
-      });
+      setOtpExpiresAt(Date.now() + (data.expiresIn * 1000));
       setMessage({ text: 'OTP sent to your email! Check your inbox.', type: 'info' });
       return true;
-    } catch (error: any) {
+    } catch {
       setMessage({ text: 'Failed to send OTP. Please try again.', type: 'error' });
       return false;
     } finally {
@@ -131,7 +134,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
       }
 
       return true;
-    } catch (error: any) {
+    } catch {
       setMessage({ text: 'Failed to verify OTP. Please try again.', type: 'error' });
       return false;
     } finally {
@@ -174,8 +177,8 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
       setTimeout(() => {
         handleClose();
       }, 1500);
-    } catch (error: any) {
-      setMessage({ text: error.message || 'Login failed', type: 'error' });
+    } catch (error: unknown) {
+      setMessage({ text: (error instanceof Error ? error.message : null) || 'Login failed', type: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -290,6 +293,12 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     }
 
     // Verify OTP
+    if (!registrationData) {
+      setMessage({ text: 'Registration data missing. Please try again.', type: 'error' });
+      setIsLoading(false);
+      return;
+    }
+
     const verified = await verifyOTP(registrationData.email, otp);
     if (!verified) {
       setIsLoading(false);
@@ -303,8 +312,8 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
       setTimeout(() => {
         handleClose();
       }, 1500);
-    } catch (error: any) {
-      setMessage({ text: error.message || 'Registration failed', type: 'error' });
+    } catch (error: unknown) {
+      setMessage({ text: (error instanceof Error ? error.message : null) || 'Registration failed', type: 'error' });
     } finally {
       setIsLoading(false);
     }

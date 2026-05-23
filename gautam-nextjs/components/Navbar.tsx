@@ -5,11 +5,15 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { useCart } from '@/lib/contexts/CartContext';
-import { ShoppingCart, LayoutDashboard } from 'lucide-react';
+import { ShoppingCart, LayoutDashboard, Menu, X } from 'lucide-react';
 
 interface NavbarProps {
   onSidebarToggle?: () => void;
   onLoginClick?: () => void;
+}
+
+interface AuthUser {
+  role?: string;
 }
 
 export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
@@ -17,6 +21,7 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, logout, user } = useAuth();
   const { cartCount, toggleCart } = useCart();
+  const authUser = user as AuthUser | null;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,33 +34,31 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
 
   return (
     <motion.nav
-      className={`fixed top-0 left-0 right-0 z-1000 transition-all duration-300 ${
+      className={`fixed left-0 right-0 top-0 z-[1000] transition-all duration-300 ${
         isScrolled
-          ? 'bg-red-900/98 backdrop-blur-lg shadow-lg'
-          : 'bg-red-900/95 backdrop-blur-md'
+          ? 'bg-[#3b0909]/96 shadow-lg shadow-black/10 backdrop-blur-xl'
+          : 'bg-[#3b0909]/88 backdrop-blur-lg'
       }`}
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex justify-between items-center h-20">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+        <div className="flex h-20 items-center justify-between gap-3">
           {/* Sidebar Toggle - Left */}
           <motion.button
             onClick={onSidebarToggle}
-            className="text-white p-2 bg-red-800 rounded-lg hover:bg-red-700 transition-colors"
-            aria-label="Toggle sidebar"
+            className="hidden rounded-full border border-white/10 bg-white/10 p-3 text-white transition-colors hover:bg-white/16 md:inline-flex"
+            aria-label="Open category sidebar"
             whileTap={{ scale: 0.95 }}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+            <Menu className="h-5 w-5" aria-hidden="true" />
           </motion.button>
 
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
+          <Link href="/" className="min-w-0 flex-shrink">
             <motion.h2
-              className="font-playfair text-2xl font-bold text-white tracking-tight"
+              className="truncate font-playfair text-xl font-bold tracking-normal text-white sm:text-2xl"
               whileHover={{ scale: 1.05 }}
             >
               Gautam Lady Shoes
@@ -63,61 +66,71 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
           </Link>
 
           {/* Desktop Navigation */}
-          <ul className="hidden md:flex items-center gap-12 list-none">
+          <ul className="hidden items-center gap-8 list-none lg:flex">
             <li>
-              <Link href="/" className="text-white font-medium hover:text-amber-400 transition-colors relative group">
+              <Link href="/" className="relative font-medium text-white transition-colors hover:text-amber-300 group">
                 Home
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-amber-300 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </li>
             <li>
-              <Link href="/slippers" className="text-white font-medium hover:text-amber-400 transition-colors relative group">
+              <Link href="/slippers" className="relative font-medium text-white transition-colors hover:text-amber-300 group">
                 Slippers
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-amber-300 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </li>
             <li>
-              <Link href="/clothing" className="text-white font-medium hover:text-amber-400 transition-colors relative group">
+              <Link href="/clothing" className="relative font-medium text-white transition-colors hover:text-amber-300 group">
                 Clothing
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-amber-300 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </li>
             <li>
-              <Link href="/collections" className="text-white font-medium hover:text-amber-400 transition-colors relative group">
+              <Link href="/collections" className="relative font-medium text-white transition-colors hover:text-amber-300 group">
                 Collections
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute bottom-0 left-0 h-0.5 w-0 bg-amber-300 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </li>
           </ul>
 
           {/* Buttons Group */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-shrink-0 items-center gap-2 sm:gap-3">
+            <motion.button
+              onClick={() => setIsMenuOpen((open) => !open)}
+              className="inline-flex rounded-full border border-white/10 bg-white/10 p-3 text-white transition-colors hover:bg-white/16 lg:hidden"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMenuOpen}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isMenuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+            </motion.button>
+
             {/* Admin Dashboard Button */}
-            {isAuthenticated && (user as any)?.role === 'admin' && (
+            {isAuthenticated && authUser?.role === 'admin' && (
               <motion.button
                 onClick={() => window.location.href = '/admin'}
-                className="relative text-white p-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+                className="relative rounded-full bg-purple-600 p-3 text-white transition-colors hover:bg-purple-700"
                 aria-label="Admin Dashboard"
                 whileTap={{ scale: 0.95 }}
                 title="Admin Dashboard"
               >
-                <LayoutDashboard className="w-6 h-6" />
+                <LayoutDashboard className="h-5 w-5" />
               </motion.button>
             )}
 
             {/* Cart Button */}
             <motion.button
               onClick={toggleCart}
-              className="relative text-white p-2 bg-red-800 rounded-lg hover:bg-red-700 transition-colors"
+              className="relative rounded-full bg-white/10 p-3 text-white transition-colors hover:bg-white/16"
               aria-label="Shopping cart"
               whileTap={{ scale: 0.95 }}
             >
-              <ShoppingCart className="w-6 h-6" />
+              <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
+                  className="absolute -right-2 -top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-amber-400 px-1 text-xs font-bold text-red-950"
                 >
                   {cartCount > 99 ? '99+' : cartCount}
                 </motion.span>
@@ -127,7 +140,7 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
             {!isAuthenticated ? (
               <motion.button
                 onClick={onLoginClick}
-                className="bg-amber-500 text-white px-6 py-2 rounded-full font-medium hover:bg-amber-600 transition-colors"
+                className="hidden rounded-full bg-amber-400 px-5 py-2.5 font-bold text-red-950 transition-colors hover:bg-amber-300 sm:inline-flex"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -136,7 +149,7 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
             ) : (
               <motion.button
                 onClick={logout}
-                className="bg-red-600 text-white px-6 py-2 rounded-full font-medium hover:bg-red-700 transition-colors"
+                className="hidden rounded-full bg-red-600 px-5 py-2.5 font-bold text-white transition-colors hover:bg-red-700 sm:inline-flex"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -152,14 +165,14 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-red-950/90 pb-4"
+            className="overflow-hidden border-t border-white/10 bg-[#2d0707]/98 pb-4 lg:hidden"
           >
-            <ul className="flex flex-col gap-2 list-none">
+            <ul className="flex flex-col gap-1 list-none pt-3">
               <li>
                 <Link
                   href="/"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 text-white hover:bg-red-900 rounded"
+                  className="block rounded-xl px-4 py-3 font-semibold text-white hover:bg-white/10"
                 >
                   Home
                 </Link>
@@ -168,7 +181,7 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
                 <Link
                   href="/slippers"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 text-white hover:bg-red-900 rounded"
+                  className="block rounded-xl px-4 py-3 font-semibold text-white hover:bg-white/10"
                 >
                   Slippers
                 </Link>
@@ -177,7 +190,7 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
                 <Link
                   href="/clothing"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 text-white hover:bg-red-900 rounded"
+                  className="block rounded-xl px-4 py-3 font-semibold text-white hover:bg-white/10"
                 >
                   Clothing
                 </Link>
@@ -186,20 +199,33 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
                 <Link
                   href="/collections"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 text-white hover:bg-red-900 rounded"
+                  className="block rounded-xl px-4 py-3 font-semibold text-white hover:bg-white/10"
                 >
                   Collections
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/team"
+                  href="/#contact"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 text-white hover:bg-red-900 rounded"
+                  className="block rounded-xl px-4 py-3 font-semibold text-white hover:bg-white/10"
                 >
-                  Our Team
+                  Contact
                 </Link>
               </li>
+              {!isAuthenticated && (
+                <li className="px-4 pt-2 sm:hidden">
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      onLoginClick?.();
+                    }}
+                    className="w-full rounded-full bg-amber-400 px-5 py-3 font-bold text-red-950 hover:bg-amber-300"
+                  >
+                    Login
+                  </button>
+                </li>
+              )}
             </ul>
           </motion.div>
         )}

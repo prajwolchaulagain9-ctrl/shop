@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useToast } from '@/lib/contexts/ToastContext';
 import Image from 'next/image';
 import { Package, CheckCircle, Clock, XCircle, ArrowLeft } from 'lucide-react';
@@ -39,13 +39,7 @@ export default function OrderDetailsPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (orderId) {
-      fetchOrder();
-    }
-  }, [orderId]);
-
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
     try {
       const response = await fetch(`/api/orders/${orderId}`);
       const data = await response.json();
@@ -62,7 +56,13 @@ export default function OrderDetailsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orderId, showToast, router]);
+
+  useEffect(() => {
+    if (orderId) {
+      fetchOrder();
+    }
+  }, [orderId, fetchOrder]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {

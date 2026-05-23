@@ -31,7 +31,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
 
 // Scroll to top on route change
 export function ScrollToTop() {
-  const pathname = usePathname();
+  usePathname();
 
   return null; // This component doesn't render anything
 }

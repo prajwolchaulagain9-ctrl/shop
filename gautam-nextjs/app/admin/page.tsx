@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import AdminDashboard from '@/components/AdminDashboard';
@@ -9,7 +9,8 @@ import { useAuth } from '@/lib/contexts/AuthContext';
 export default function AdminPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
-  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  const isAuthorized = !loading && !!user && user.role === 'admin';
 
   useEffect(() => {
     // Check if user is admin
@@ -17,11 +18,9 @@ export default function AdminPage() {
       if (!user) {
         // Redirect to login if not authenticated
         router.push('/login');
-      } else if ((user as any).role !== 'admin') {
+      } else if (user.role !== 'admin') {
         // Redirect if not admin
         router.push('/');
-      } else {
-        setIsAuthorized(true);
       }
     }
   }, [user, loading, router]);

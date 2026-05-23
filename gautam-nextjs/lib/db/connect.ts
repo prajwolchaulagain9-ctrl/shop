@@ -7,8 +7,8 @@ if (!MONGODB_URI) {
 }
 
 interface GlobalMongoose {
-  conn: any;
-  promise: any;
+  conn: mongoose.Mongoose | null;
+  promise: Promise<mongoose.Mongoose> | null;
 }
 
 declare global {

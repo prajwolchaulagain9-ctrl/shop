@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db/connect';
 import OTP from '@/lib/models/OTP';
 import { Resend } from 'resend';
-import { checkRateLimit, getClientIp, RateLimitPresets } from '@/lib/utils/rateLimit';
+import { checkRateLimit, RateLimitPresets } from '@/lib/utils/rateLimit';
 import bcryptjs from 'bcryptjs';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
       } else {
         console.log('OTP sent successfully via Resend! ID:', result.data?.id);
       }
-    } catch (emailError: any) {
+    } catch (emailError: unknown) {
       console.error('Email sending error:', emailError);
       // In development, still allow OTP verification to proceed
       // The OTP is already saved in the database
