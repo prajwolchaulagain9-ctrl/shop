@@ -330,11 +330,11 @@ export default function LoginPage() {
                   {errors.confirm_password && <p className="text-red-600 text-sm mt-1">{errors.confirm_password}</p>}
                 </div>
 
-                <label className="flex items-start">
-                  <input type="checkbox" name="terms" required className="w-4 h-4 rounded accent-red-900 mt-1" />
-                  <span className="ml-2 text-sm text-gray-700">
+                <label className="flex items-start cursor-pointer">
+                  <input type="checkbox" name="terms" required className="w-4 h-4 rounded accent-red-900 mt-1 cursor-pointer" />
+                  <span className="ml-2 text-sm text-gray-700 select-none">
                     I agree to the{' '}
-                    <a href="#" className="text-red-900 hover:text-red-800 font-medium">
+                    <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-red-900 hover:text-red-800 font-semibold underline">
                       Terms & Conditions
                     </a>
                   </span>

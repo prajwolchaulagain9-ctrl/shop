@@ -611,8 +611,8 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                         WebkitAppearance: 'checkbox',
                       }}
                     />
-                    <span className="ml-3 text-sm text-gray-700">
-                      I agree to the <a href="#" className="text-red-900 hover:text-red-800 font-semibold underline">Terms & Conditions</a>
+                    <span className="ml-3 text-sm text-gray-700 select-none">
+                      I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-red-900 hover:text-red-800 font-semibold underline">Terms & Conditions</a>
                     </span>
                   </label>
 
