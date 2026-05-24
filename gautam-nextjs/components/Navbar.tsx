@@ -213,7 +213,19 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
                   Contact
                 </Link>
               </li>
-              {!isAuthenticated && (
+              {isAuthenticated && authUser?.role === 'admin' && (
+                <li className="px-4 pt-1">
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center gap-2 w-full rounded-full bg-purple-600 px-5 py-3 font-bold text-white hover:bg-purple-700"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Admin Dashboard
+                  </Link>
+                </li>
+              )}
+              {!isAuthenticated ? (
                 <li className="px-4 pt-2 sm:hidden">
                   <button
                     onClick={() => {
@@ -223,6 +235,18 @@ export default function Navbar({ onSidebarToggle, onLoginClick }: NavbarProps) {
                     className="w-full rounded-full bg-amber-400 px-5 py-3 font-bold text-red-950 hover:bg-amber-300"
                   >
                     Login
+                  </button>
+                </li>
+              ) : (
+                <li className="px-4 pt-2">
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      logout();
+                    }}
+                    className="w-full rounded-full bg-red-600 px-5 py-3 font-bold text-white hover:bg-red-700"
+                  >
+                    Logout
                   </button>
                 </li>
               )}
