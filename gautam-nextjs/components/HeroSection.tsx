@@ -4,12 +4,28 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Truck, ShieldCheck } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+const DEFAULT_HERO_IMAGE = '/sano-thaili.jpg';
 
 export default function HeroSection() {
+  const [heroImage, setHeroImage] = useState(DEFAULT_HERO_IMAGE);
+
+  useEffect(() => {
+    fetch('/api/settings?key=hero_image')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.value) {
+          setHeroImage(data.value);
+        }
+      })
+      .catch(() => {}); // Silently fail, use default
+  }, []);
+
   return (
     <section className="relative min-h-[92svh] overflow-hidden bg-[#220707] pt-20 text-white">
       <Image
-        src="/sano-thaili.jpg"
+        src={heroImage}
         alt="Traditional Nepalese handmade textile collection"
         fill
         priority

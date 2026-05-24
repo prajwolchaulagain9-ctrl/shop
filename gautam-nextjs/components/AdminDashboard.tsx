@@ -22,6 +22,7 @@ import StatCard from './admin/StatCard';
 import OrdersTable from './admin/OrdersTable';
 import RevenueChart from './admin/RevenueChart';
 import ProductsTable from './admin/ProductsTable';
+import SiteSettingsPanel from './admin/SiteSettingsPanel';
 
 interface DashboardStats {
   totalRevenue: number;
@@ -135,6 +136,16 @@ export default function AdminDashboard() {
             }`}
           >
             Products
+          </button>
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`px-4 py-3 font-medium transition-colors ${
+              activeTab === 'settings'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Site Settings
           </button>
         </div>
 
@@ -267,6 +278,7 @@ export default function AdminDashboard() {
 
         {activeTab === 'orders' && <OrdersTable />}
         {activeTab === 'products' && <ProductsTable />}
+        {activeTab === 'settings' && <SiteSettingsPanel />}
       </div>
     </div>
   );
