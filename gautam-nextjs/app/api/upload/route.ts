@@ -25,18 +25,24 @@ export async function POST(request: NextRequest) {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     const filename = `${uniqueSuffix}-${file.name.replace(/\s+/g, '-')}`;
     
-    // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    let imageUrl = '';
     try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (err) {
-      // Ignore if exists
+      // Ensure upload directory exists
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+      try {
+        await mkdir(uploadDir, { recursive: true });
+      } catch (err) {
+        // Ignore if exists
+      }
+
+      const filepath = path.join(uploadDir, filename);
+      await writeFile(filepath, buffer);
+      imageUrl = `/uploads/${filename}`;
+    } catch (writeError: any) {
+      console.warn('Local filesystem write failed, falling back to base64 data URL:', writeError);
+      const base64 = buffer.toString('base64');
+      imageUrl = `data:${file.type || 'image/jpeg'};base64,${base64}`;
     }
-
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    const imageUrl = `/uploads/${filename}`;
 
     return NextResponse.json({ success: true, url: imageUrl });
   } catch (error: any) {
