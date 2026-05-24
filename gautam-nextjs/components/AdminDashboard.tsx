@@ -21,6 +21,7 @@ import {
 import StatCard from './admin/StatCard';
 import OrdersTable from './admin/OrdersTable';
 import RevenueChart from './admin/RevenueChart';
+import ProductsTable from './admin/ProductsTable';
 
 interface DashboardStats {
   totalRevenue: number;
@@ -124,6 +125,16 @@ export default function AdminDashboard() {
             }`}
           >
             Orders
+          </button>
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`px-4 py-3 font-medium transition-colors ${
+              activeTab === 'products'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Products
           </button>
         </div>
 
@@ -255,6 +266,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'orders' && <OrdersTable />}
+        {activeTab === 'products' && <ProductsTable />}
       </div>
     </div>
   );

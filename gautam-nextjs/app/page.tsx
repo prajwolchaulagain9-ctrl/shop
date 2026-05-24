@@ -2,7 +2,7 @@
 
 import HeroSection from '@/components/HeroSection';
 import ProductCard from '@/components/ProductCard';
-import { slippers, clothing, collections } from '@/src/data/products';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -19,6 +19,28 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.products);
+        }
+      });
+  }, []);
+
+  const flatSlippers = products.filter(p => p.category === 'slippers' && p.subCategory === 'flat').slice(0, 3);
+  
+  const clothingShowcase = [
+    products.find(p => p.category === 'clothing' && p.subCategory === 'daura'),
+    products.find(p => p.category === 'clothing' && p.subCategory === 'gunya'),
+    products.find(p => p.category === 'clothing' && p.subCategory === 'specialKurta')
+  ].filter(Boolean);
+
+  const collectionsShowcase = products.filter(p => p.category === 'collections').slice(0, 3);
+
   return (
     <main className="min-h-screen bg-[#fbfaf7]">
       <HeroSection />
@@ -41,8 +63,8 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            {slippers.flat.slice(0, 3).map((product, idx) => (
-              <ProductCard key={product.id} {...product} index={idx} />
+            {flatSlippers.map((product, idx) => (
+              <ProductCard key={product._id || product.id} {...product} index={idx} id={product._id || product.id} />
             ))}
           </div>
 
@@ -85,12 +107,8 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            {[
-              clothing.daura[0],
-              clothing.gunya[0],
-              clothing.specialKurta[0],
-            ].map((product, idx) => (
-              <ProductCard key={product.id} {...product} index={idx} />
+            {clothingShowcase.map((product, idx) => (
+              <ProductCard key={product?._id || product?.id} {...product} index={idx} id={product?._id || product?.id} />
             ))}
           </div>
 
@@ -133,8 +151,8 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            {collections.slice(0, 3).map((product, idx) => (
-              <ProductCard key={product.id} {...product} index={idx} />
+            {collectionsShowcase.map((product, idx) => (
+              <ProductCard key={product._id || product.id} {...product} index={idx} id={product._id || product.id} />
             ))}
           </div>
 
@@ -271,7 +289,7 @@ export default function Home() {
                 icon: Phone,
                 title: 'Get In Touch',
                 content: [
-                  'Phone: +977 9851223736',
+                  'Phone: +977 9849591758',
                   'Email: bharatgautam@gmail.com',
                 ],
               },
@@ -401,8 +419,8 @@ export default function Home() {
                   <p className="text-gray-700">
                     <span className="inline-flex items-center gap-2 font-semibold"><Phone className="h-4 w-4" aria-hidden="true" /> Phone:</span>
                     <br />
-                    <a href="tel:+9779851223736" className="font-medium text-red-950 hover:text-red-700">
-                      +977 9851223736
+                    <a href="tel:+9779849591758" className="font-medium text-red-950 hover:text-red-700">
+                      +977 9849591758
                     </a>
                   </p>
                   <p className="text-gray-700">

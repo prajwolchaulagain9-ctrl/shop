@@ -22,9 +22,14 @@ const requiredEnvVars: EnvConfig[] = [
     description: 'Secret key for JWT token generation',
   },
   {
-    name: 'RESEND_API_KEY',
+    name: 'GMAIL_USER',
     required: true,
-    description: 'Resend API key for sending emails (OTP, notifications)',
+    description: 'Gmail address used to send OTP emails (e.g. yourname@gmail.com)',
+  },
+  {
+    name: 'GMAIL_APP_PASSWORD',
+    required: true,
+    description: 'Gmail App Password for sending emails (Google Account → Security → App Passwords)',
   },
   {
     name: 'ESEWA_MERCHANT_CODE',

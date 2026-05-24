@@ -1,16 +1,28 @@
 'use client';
 
 import ProductCard from '@/components/ProductCard';
-import { slippers } from '@/src/data/products';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function SlippersPage() {
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/products?category=slippers')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.products);
+        }
+      });
+  }, []);
+
   const sections = [
-    { id: 'flat', title: 'Flat Slippers', products: slippers.flat },
-    { id: 'block-heel', title: 'Block Heel Slippers', products: slippers.blockHeel },
-    { id: 'medium-heel', title: 'Medium Heel Slippers', products: slippers.mediumHeel },
-    { id: 'small-heel', title: 'Small Heel Slippers', products: slippers.smallHeel },
-  ];
+    { id: 'flat', title: 'Flat Slippers', products: products.filter(p => p.subCategory === 'flat') },
+    { id: 'block-heel', title: 'Block Heel Slippers', products: products.filter(p => p.subCategory === 'blockHeel') },
+    { id: 'medium-heel', title: 'Medium Heel Slippers', products: products.filter(p => p.subCategory === 'mediumHeel') },
+    { id: 'small-heel', title: 'Small Heel Slippers', products: products.filter(p => p.subCategory === 'smallHeel') },
+  ].filter(section => section.products.length > 0);
 
   return (
     <main className="min-h-screen bg-[#fbfaf7] pt-20">
@@ -50,13 +62,19 @@ export default function SlippersPage() {
             </motion.div>
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-              {section.products.map((product, idx) => (
-                <ProductCard key={product.id} {...product} index={idx} />
+              {section.products.map((product: any, idx: number) => (
+                <ProductCard key={product._id || product.id} {...product} index={idx} id={product._id || product.id} />
               ))}
             </div>
           </div>
         </section>
       ))}
+      
+      {sections.length === 0 && (
+        <div className="text-center py-20 text-gray-500">
+          Loading slippers... or no products found.
+        </div>
+      )}
     </main>
   );
 }

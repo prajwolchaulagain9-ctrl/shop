@@ -88,8 +88,8 @@ export default function Footer() {
                 <span>Nepal 44600</span>
               </li>
               <li>
-                <a href="tel:+9779851223736" className="hover:text-white transition-colors">
-                  +977 9851223736
+                <a href="tel:+9779849591758" className="hover:text-white transition-colors">
+                  +977 9849591758
                 </a>
               </li>
               <li>

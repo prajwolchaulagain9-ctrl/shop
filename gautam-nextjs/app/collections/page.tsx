@@ -1,10 +1,22 @@
 'use client';
 
 import ProductCard from '@/components/ProductCard';
-import { collections } from '@/src/data/products';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function CollectionsPage() {
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/products?category=collections')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.products);
+        }
+      });
+  }, []);
+
   return (
     <main className="min-h-screen bg-[#fbfaf7] pt-20">
       {/* Hero */}
@@ -45,10 +57,16 @@ export default function CollectionsPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            {collections.map((product, idx) => (
-              <ProductCard key={product.id} {...product} index={idx} />
+            {products.map((product, idx) => (
+              <ProductCard key={product._id || product.id} {...product} index={idx} id={product._id || product.id} />
             ))}
           </div>
+
+          {products.length === 0 && (
+            <div className="text-center py-20 text-gray-500">
+              Loading collections... or no products found.
+            </div>
+          )}
         </div>
       </section>
 
@@ -68,12 +86,12 @@ export default function CollectionsPage() {
               Contact us to learn about custom orders and special requests for traditional Nepalese items.
             </p>
             <motion.a
-              href="tel:+9779851223736"
+              href="tel:+9779849591758"
               className="inline-flex w-full items-center justify-center rounded-full bg-red-950 px-8 py-3.5 font-bold text-white transition-colors hover:bg-red-900 sm:w-auto"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Call Us: +977 9851223736
+              Call Us: +977 9849591758
             </motion.a>
           </motion.div>
         </div>

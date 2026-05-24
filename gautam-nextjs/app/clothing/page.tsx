@@ -1,18 +1,30 @@
 'use client';
 
 import ProductCard from '@/components/ProductCard';
-import { clothing } from '@/src/data/products';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function ClothingPage() {
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/products?category=clothing')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setProducts(data.products);
+        }
+      });
+  }, []);
+
   const sections = [
-    { id: 'krishna-radha', title: 'Krishna and Radha Sets', products: clothing.krishnaRadha },
-    { id: 'pasni', title: 'Pasni Clothes', products: clothing.pasni },
-    { id: 'daura', title: 'Daura Suruwal', products: clothing.daura },
-    { id: 'plain-kurta', title: 'Plain Kurta', products: clothing.plainKurta },
-    { id: 'chicken-kadai', title: 'Chicken Kadai Kurta Set', products: clothing.specialKurta },
-    { id: 'gunyu', title: 'Gunyu Choli & Girls Kurta', products: clothing.gunya },
-  ];
+    { id: 'krishna-radha', title: 'Krishna and Radha Sets', products: products.filter(p => p.subCategory === 'krishnaRadha') },
+    { id: 'pasni', title: 'Pasni Clothes', products: products.filter(p => p.subCategory === 'pasni') },
+    { id: 'daura', title: 'Daura Suruwal', products: products.filter(p => p.subCategory === 'daura') },
+    { id: 'plain-kurta', title: 'Plain Kurta', products: products.filter(p => p.subCategory === 'plainKurta') },
+    { id: 'chicken-kadai', title: 'Chicken Kadai Kurta Set', products: products.filter(p => p.subCategory === 'specialKurta') },
+    { id: 'gunyu', title: 'Gunyu Choli & Girls Kurta', products: products.filter(p => p.subCategory === 'gunya') },
+  ].filter(section => section.products.length > 0);
 
   return (
     <main className="min-h-screen bg-[#fbfaf7] pt-20">
@@ -56,13 +68,19 @@ export default function ClothingPage() {
             </motion.div>
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-              {section.products.map((product, idx) => (
-                <ProductCard key={product.id} {...product} index={idx} />
+              {section.products.map((product: any, idx: number) => (
+                <ProductCard key={product._id || product.id} {...product} index={idx} id={product._id || product.id} />
               ))}
             </div>
           </div>
         </section>
       ))}
+      
+      {sections.length === 0 && (
+        <div className="text-center py-20 text-gray-500">
+          Loading clothing... or no products found.
+        </div>
+      )}
     </main>
   );
 }
