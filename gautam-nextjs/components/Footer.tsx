@@ -68,6 +68,11 @@ export default function Footer() {
                   Contact Us
                 </Link>
               </li>
+              <li>
+                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+                  Terms &amp; Conditions
+                </Link>
+              </li>
             </ul>
           </motion.div>
 
@@ -109,9 +114,14 @@ export default function Footer() {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <p className="text-center text-gray-500 text-sm">
-            &copy; 2025 Gautam Lady Shoes. All rights reserved. | Crafted with love in Nepal
-          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p className="text-gray-500 text-sm">
+              &copy; 2026 Gautam Lady Shoes. All rights reserved. | Crafted with love in Nepal
+            </p>
+            <Link href="/terms" className="text-gray-500 text-sm hover:text-amber-400 transition-colors">
+              Terms &amp; Conditions
+            </Link>
+          </div>
         </motion.div>
       </div>
     </footer>
