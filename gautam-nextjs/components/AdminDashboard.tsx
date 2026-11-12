@@ -1,285 +1,179 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import {
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
+"use client";
+import { useState } from "react";
+import dynamic from "next/dynamic";
+import Link from "next/link";
 import {
   Package,
-  TrendingUp,
-  Users,
-  ShoppingCart,
-  Clock,
-  CheckCircle,
-  Truck,
-  AlertCircle,
-} from 'lucide-react';
-import StatCard from './admin/StatCard';
-import OrdersTable from './admin/OrdersTable';
-import RevenueChart from './admin/RevenueChart';
-import ProductsTable from './admin/ProductsTable';
-import SiteSettingsPanel from './admin/SiteSettingsPanel';
-
+  ShoppingBag,
+  BarChart3,
+  Settings,
+  ArrowUpRight,
+  LogOut,
+} from "lucide-react";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { useRemoteData } from "@/lib/hooks/useRemoteData";
+const placeholder = () => (
+  <div className="admin-loading" aria-label="Loading section" />
+);
+const OrdersTable = dynamic(() => import("./admin/OrdersTable"), {
+  loading: placeholder,
+});
+const ProductsTable = dynamic(() => import("./admin/ProductsTable"), {
+  loading: placeholder,
+});
+const SiteSettingsPanel = dynamic(() => import("./admin/SiteSettingsPanel"), {
+  loading: placeholder,
+});
+const RevenueChart = dynamic(() => import("./admin/RevenueChart"), {
+  loading: placeholder,
+});
 interface DashboardStats {
   totalRevenue: number;
   totalOrders: number;
   totalUsers: number;
-  verifiedUsers: number;
-  ordersByStatus: {
-    pending: number;
-    processing: number;
-    shipped: number;
-    delivered: number;
-  };
-  paymentMethods: Array<{
-    _id: string;
-    count: number;
-    revenue: number;
-  }>;
   monthlyRevenue: number;
-  dailyRevenue: Array<{
-    _id: string;
-    revenue: number;
-    orders: number;
-  }>;
+  ordersByStatus: Record<string, number>;
+  dailyRevenue: { _id: string; revenue: number; orders: number }[];
 }
-
+const tabs = [
+  ["orders", "Orders", ShoppingBag],
+  ["products", "Products", Package],
+  ["overview", "Overview", BarChart3],
+  ["settings", "Site settings", Settings],
+] as const;
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch('/api/admin/stats', {
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setStats(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-gray-600">Loading dashboard...</div>
-      </div>
-    );
-  }
-
-  if (!stats) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-red-600">Failed to load dashboard</div>
-      </div>
-    );
-  }
-
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
-
+  const [active, setActive] = useState("orders"),
+    [visited, setVisited] = useState(["orders"]),
+    [retry, setRetry] = useState(0);
+  const { user, logout } = useAuth();
+  const {
+    data: stats,
+    loading,
+    error,
+  } = useRemoteData<DashboardStats>(
+    visited.includes("overview") ? "/api/admin/stats" : null,
+    retry,
+  );
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Admin Dashboard
-          </h1>
-          <p className="text-gray-600">
-            Welcome back! Here&apos;s your business overview.
+    <main id="main-content" className="admin-shell">
+      <aside className="admin-nav">
+        <Link className="wordmark" href="/">
+          <span className="wordmark-name">gautam.</span>
+          <span className="wordmark-sub">SHOP MANAGEMENT</span>
+        </Link>
+        <div>
+          <p style={{ fontSize: 12, marginBottom: 14 }}>
+            Namaste, {user?.firstName}.
           </p>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-4 mb-8 border-b border-gray-200">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`px-4 py-3 font-medium transition-colors ${
-              activeTab === 'overview'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`px-4 py-3 font-medium transition-colors ${
-              activeTab === 'orders'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Orders
-          </button>
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`px-4 py-3 font-medium transition-colors ${
-              activeTab === 'products'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Products
-          </button>
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`px-4 py-3 font-medium transition-colors ${
-              activeTab === 'settings'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Site Settings
+          <button className="text-link" onClick={logout}>
+            <LogOut size={15} />
+            Sign out
           </button>
         </div>
-
-        {activeTab === 'overview' && (
-          <>
-            {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StatCard
-                title="Total Revenue"
-                value={`Rs. ${stats.totalRevenue.toLocaleString()}`}
-                change="+12.5%"
-                icon={TrendingUp}
-                color="blue"
-              />
-              <StatCard
-                title="Total Orders"
-                value={stats.totalOrders.toString()}
-                change="+8.2%"
-                icon={ShoppingCart}
-                color="green"
-              />
-              <StatCard
-                title="Total Users"
-                value={stats.totalUsers.toString()}
-                subtitle={`${stats.verifiedUsers} verified`}
-                icon={Users}
-                color="purple"
-              />
-              <StatCard
-                title="This Month"
-                value={`Rs. ${stats.monthlyRevenue.toLocaleString()}`}
-                change="+5.3%"
-                icon={Package}
-                color="orange"
-              />
-            </div>
-
-            {/* Order Status Breakdown */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                  Order Status Breakdown
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <Clock className="w-6 h-6 text-blue-600" />
-                      <span className="text-gray-700">Pending</span>
-                    </div>
-                    <span className="text-2xl font-bold text-blue-600">
-                      {stats.ordersByStatus.pending}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <AlertCircle className="w-6 h-6 text-yellow-600" />
-                      <span className="text-gray-700">Processing</span>
-                    </div>
-                    <span className="text-2xl font-bold text-yellow-600">
-                      {stats.ordersByStatus.processing}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <Truck className="w-6 h-6 text-purple-600" />
-                      <span className="text-gray-700">Shipped</span>
-                    </div>
-                    <span className="text-2xl font-bold text-purple-600">
-                      {stats.ordersByStatus.shipped}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="w-6 h-6 text-green-600" />
-                      <span className="text-gray-700">Delivered</span>
-                    </div>
-                    <span className="text-2xl font-bold text-green-600">
-                      {stats.ordersByStatus.delivered}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Methods */}
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                  Payment Methods
-                </h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={stats.paymentMethods}
-                      dataKey="count"
-                      nameKey="_id"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      label
-                    >
-                      {stats.paymentMethods.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="mt-4 space-y-2">
-                  {stats.paymentMethods.map((method, index) => (
-                    <div key={method._id} className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                        />
-                        <span className="text-gray-700 capitalize">{method._id}</span>
-                      </div>
-                      <span className="text-gray-900 font-semibold">
-                        {method.count} orders
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Revenue Charts */}
-            <RevenueChart data={stats.dailyRevenue} />
-          </>
+        <Link href="/">
+          Back to the shop <ArrowUpRight size={16} />
+        </Link>
+      </aside>
+      <section className="admin-content">
+        <p className="admin-kicker">A LITTLE ORDER BEHIND THE BEAUTY</p>
+        <h1>Your shop desk.</h1>
+        <nav className="admin-tabs" aria-label="Shop management">
+          {tabs.map(([id, label, Icon]) => (
+            <button
+              key={id}
+              className={active === id ? "active" : ""}
+              aria-current={active === id ? "page" : undefined}
+              onClick={() => {
+                setActive(id);
+                setVisited((v) => (v.includes(id) ? v : [...v, id]));
+              }}
+            >
+              <Icon size={17} />
+              {label}
+            </button>
+          ))}
+        </nav>
+        {visited.includes("orders") && (
+          <div hidden={active !== "orders"}>
+            <OrdersTable />
+          </div>
         )}
-
-        {activeTab === 'orders' && <OrdersTable />}
-        {activeTab === 'products' && <ProductsTable />}
-        {activeTab === 'settings' && <SiteSettingsPanel />}
-      </div>
-    </div>
+        {visited.includes("products") && (
+          <div hidden={active !== "products"}>
+            <ProductsTable />
+          </div>
+        )}
+        {visited.includes("settings") && (
+          <div hidden={active !== "settings"}>
+            <SiteSettingsPanel />
+          </div>
+        )}
+        {active === "overview" &&
+          (loading && !stats ? (
+            <div className="admin-loading" />
+          ) : error ? (
+            <div className="admin-feedback">
+              <p>
+                Statistics couldn’t load. Orders and products are still
+                available.
+              </p>
+              <button className="text-link" onClick={() => setRetry(retry + 1)}>
+                Try again
+              </button>
+            </div>
+          ) : stats ? (
+            <>
+              <div className="stat-grid">
+                {[
+                  ["Order value", "NPR " + stats.totalRevenue.toLocaleString()],
+                  ["Orders", stats.totalOrders],
+                  ["Customers", stats.totalUsers],
+                  [
+                    "This month",
+                    "NPR " + stats.monthlyRevenue.toLocaleString(),
+                  ],
+                ].map(([label, value]) => (
+                  <div className="stat-box" key={label}>
+                    <p>{label}</p>
+                    <strong>{value}</strong>
+                  </div>
+                ))}
+              </div>
+              <div className="admin-grid" style={{ marginTop: 22 }}>
+                <div className="admin-panel">
+                  <h2>Orders at a glance</h2>
+                  <div className="admin-status-list">
+                    {Object.entries(stats.ordersByStatus).map(
+                      ([status, count]) => (
+                        <div key={status}>
+                          <span>{status}</span>
+                          <strong>{count}</strong>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
+                <div className="admin-panel">
+                  <h2>Keep the next moment moving.</h2>
+                  <p style={{ lineHeight: 1.9 }}>
+                    Start with pending orders, confirm the delivery details, and
+                    keep product availability up to date.
+                  </p>
+                  <button
+                    className="text-link"
+                    style={{ marginTop: 20 }}
+                    onClick={() => setActive("orders")}
+                  >
+                    Review orders <ArrowUpRight size={16} />
+                  </button>
+                </div>
+              </div>
+              <div style={{ marginTop: 22 }}>
+                <RevenueChart data={stats.dailyRevenue} />
+              </div>
+            </>
+          ) : null)}
+      </section>
+    </main>
   );
 }

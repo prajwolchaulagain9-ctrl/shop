@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Private migration backups and generated browser artifacts
+.media-backups/
+test-results/

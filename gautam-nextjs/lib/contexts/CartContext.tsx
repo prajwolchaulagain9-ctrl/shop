@@ -18,6 +18,7 @@ interface CartContextType {
   cartCount: number;
   isCartOpen: boolean;
   loading: boolean;
+  hydrated: boolean;
   addToCart: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void;
   updateCartItem: (productId: string, quantity: number) => void;
   removeFromCart: (productId: string) => void;
@@ -37,6 +38,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const { isAuthenticated } = useAuth();
   const { openLogin } = useLogin();
   const { showToast } = useToast();
@@ -50,21 +52,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (hydrated && typeof window !== 'undefined') {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
     }
-  }, [cart]);
+  }, [cart, hydrated]);
 
   const fetchCart = () => {
     try {
       if (typeof window !== 'undefined') {
         const storedCart = localStorage.getItem(CART_STORAGE_KEY);
         if (storedCart) {
-          setCart(JSON.parse(storedCart));
+          const rows = JSON.parse(storedCart);
+          if (Array.isArray(rows)) setCart(rows.filter(row => row && typeof row.productId === 'string' && typeof row.price === 'string' && typeof row.name === 'string' && typeof row.image === 'string' && Number.isInteger(row.quantity) && row.quantity > 0 && row.quantity <= 99));
         }
       }
     } catch (error) {
       console.error('Error fetching cart from localStorage:', error);
+    } finally {
+      setHydrated(true);
     }
   };
 
@@ -86,11 +91,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (existingItemIndex > -1) {
         // Update quantity if item exists
         const updatedCart = [...prevCart];
-        updatedCart[existingItemIndex].quantity += quantity;
+        updatedCart[existingItemIndex] = { ...updatedCart[existingItemIndex], quantity: Math.min(99, updatedCart[existingItemIndex].quantity + quantity) };
         return updatedCart;
       } else {
         // Add new item
-        return [...prevCart, { ...item, quantity }];
+        return [...prevCart, { ...item, quantity: Math.min(99, quantity) }];
       }
     });
     setIsCartOpen(true);
@@ -104,7 +109,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.productId === productId ? { ...item, quantity } : item
+        item.productId === productId ? { ...item, quantity: Math.min(99, quantity) } : item
       )
     );
   };
@@ -165,6 +170,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cartCount,
         isCartOpen,
         loading,
+        hydrated,
         addToCart,
         updateCartItem,
         removeFromCart,

@@ -1,306 +1,313 @@
-'use client';
-
-import { useState, useRef, useEffect } from 'react';
-import { X, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
-import Image from 'next/image';
-
-interface ProductFormModalProps {
+"use client";
+import { useState, useRef, useEffect } from "react";
+import { X, Upload, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { CatalogProduct } from "@/lib/catalog/types";
+import { imageUrl } from "@/lib/media/images";
+import { prepareProductImage } from "@/lib/media/prepare-upload";
+interface Props {
   isOpen: boolean;
   onClose: () => void;
-  product?: any;
+  product?: CatalogProduct | null;
   onSuccess: () => void;
 }
-
+const subcategories: Record<string, [string, string][]> = {
+  slippers: [
+    ["flat", "Flat slippers"],
+    ["blockHeel", "Block heel"],
+    ["mediumHeel", "Medium heel"],
+    ["smallHeel", "Small heel"],
+  ],
+  clothing: [
+    ["pasni", "Pasni"],
+    ["krishnaRadha", "Krishna / Radha"],
+    ["daura", "Daura Suruwal"],
+    ["plainKurta", "Plain kurta"],
+    ["specialKurta", "Embroidered kurta"],
+    ["gunya", "Gunyu Choli"],
+  ],
+  collections: [],
+};
 export default function ProductFormModal({
   isOpen,
   onClose,
   product,
   onSuccess,
-}: ProductFormModalProps) {
-  const [loading, setLoading] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    description: '',
-    category: 'slippers',
-    subCategory: '',
-    isAvailable: true,
+}: Props) {
+  const [loading, setLoading] = useState(false),
+    [file, setFile] = useState<File | null>(null),
+    [preview, setPreview] = useState(""),
+    [error, setError] = useState("");
+  const [form, setForm] = useState({
+    name: product?.name || "",
+    price: product?.price || "",
+    description: product?.description || "",
+    category: product?.category || "slippers",
+    subCategory: product?.subCategory || "",
+    isAvailable: product?.isAvailable ?? true,
   });
-
+  const input = useRef<HTMLInputElement>(null),
+    dialog = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (product) {
-      setFormData({
-        name: product.name || '',
-        price: product.price || '',
-        description: product.description || '',
-        category: product.category || 'slippers',
-        subCategory: product.subCategory || '',
-        isAvailable: product.isAvailable ?? true,
-      });
-      setImagePreview(product.image || null);
-    } else {
-      setFormData({
-        name: '',
-        price: '',
-        description: '',
-        category: 'slippers',
-        subCategory: '',
-        isAvailable: true,
-      });
-      setImagePreview(null);
-      setImageFile(null);
+    if (!file) {
+      setPreview(product?.image ? imageUrl(product.image, 800) : "");
+      return;
     }
-  }, [product, isOpen]);
-
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file, product]);
+  useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.activeElement as HTMLElement;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const timer = setTimeout(
+      () => dialog.current?.querySelector<HTMLButtonElement>("button")?.focus(),
+      0,
+    );
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = overflow;
+      previous?.focus();
+    };
+  }, [isOpen]);
   if (!isOpen) return null;
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const uploadImage = async () => {
-    if (!imageFile) return null;
-    
-    const formData = new FormData();
-    formData.append('file', imageFile);
-
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error('Image upload failed');
-    }
-
-    const data = await response.json();
-    return data.url;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  async function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (loading) return;
     setLoading(true);
-
+    setError("");
     try {
-      let imageUrl = product?.image;
-
-      if (imageFile) {
-        imageUrl = await uploadImage();
+      let url: string | undefined;
+      if (file) {
+        const body = new FormData();
+        body.append("file", await prepareProductImage(file));
+        const response = await fetch("/api/upload", { method: "POST", body });
+        const data = await response.json();
+        if (!response.ok || !data.url)
+          throw new Error(data.message || "Image upload failed.");
+        url = data.url;
       }
-
-      if (!imageUrl) {
-        throw new Error('Please provide an image');
-      }
-
-      const productData = {
-        ...formData,
-        image: imageUrl,
-      };
-
-      const url = product ? `/api/admin/products/${product._id}` : '/api/admin/products';
-      const method = product ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
+      if (!product && !url)
+        throw new Error("Choose a product image before saving.");
+      const body = { ...form, ...(url ? { image: url } : {}) };
+      const response = await fetch(
+        product ? "/api/admin/products/" + product._id : "/api/admin/products",
+        {
+          method: product ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
         },
-        body: JSON.stringify(productData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save product');
-      }
-
+      );
+      const data = await response.json();
+      if (!response.ok)
+        throw new Error(data.message || "The product could not be saved.");
       onSuccess();
       onClose();
-    } catch (error) {
-      console.error('Error saving product:', error);
-      alert('Failed to save product. Check console for details.');
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : "Save failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
-  };
-
+  }
+  function choose(e: React.ChangeEvent<HTMLInputElement>) {
+    const chosen = e.target.files?.[0];
+    if (!chosen) return;
+    if (
+      !["image/jpeg", "image/png", "image/webp", "image/avif"].includes(
+        chosen.type,
+      ) ||
+      chosen.size > 10 * 1024 * 1024
+    ) {
+      setError("Choose a JPEG, PNG, WebP or AVIF image smaller than 10 MB.");
+      return;
+    }
+    setError("");
+    setFile(chosen);
+  }
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white z-10">
-          <h2 className="text-xl font-bold text-gray-900">
-            {product ? 'Edit Product' : 'Add New Product'}
+    <div
+      className="admin-modal"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !loading) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="product-dialog-title"
+        ref={dialog}
+        onKeyDown={(e) => {
+          if (e.key === "Escape" && !loading) onClose();
+          if (e.key === "Tab") {
+            const els = dialog.current?.querySelectorAll<HTMLElement>(
+              "button:not(:disabled),input:not([type=hidden]),select,textarea",
+            );
+            if (!els?.length) return;
+            const first = els[0],
+              last = els[els.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        }}
+      >
+        <div className="admin-modal-header">
+          <h2 id="product-dialog-title">
+            {product ? "Edit product" : "Add a beautiful new piece"}
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <X className="w-6 h-6" />
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Close product form"
+            disabled={loading}
+            onClick={onClose}
+          >
+            <X size={21} />
           </button>
         </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Product Image
-              </label>
-              <div 
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
-              >
-                {imagePreview ? (
-                  <div className="relative w-full h-48">
-                    <Image
-                      src={imagePreview}
-                      alt="Preview"
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center text-gray-500">
-                    <ImageIcon className="w-12 h-12 mb-2" />
-                    <span>Click to upload image</span>
-                  </div>
-                )}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-900 focus:border-red-900 text-gray-900"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Price (e.g., NPR 1200)
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-900 focus:border-red-900 text-gray-900"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                required
-                rows={3}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-900 focus:border-red-900 text-gray-900"
+        <form onSubmit={submit}>
+          <button
+            type="button"
+            className="upload-button"
+            onClick={() => input.current?.click()}
+          >
+            {preview ? (
+              <Image
+                src={preview}
+                alt="Selected product image"
+                fill
+                sizes="600px"
+                unoptimized
+                className="object-contain"
               />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
-                </label>
-                <select
-                  required
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value, subCategory: '' })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-900 focus:border-red-900 text-gray-900 bg-white"
-                >
-                  <option value="slippers">Slippers</option>
-                  <option value="clothing">Clothing</option>
-                  <option value="collections">Collections</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Subcategory
-                </label>
-                <select
-                  value={formData.subCategory}
-                  onChange={(e) => setFormData({ ...formData, subCategory: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-900 focus:border-red-900 text-gray-900 bg-white"
-                >
-                  <option value="">None</option>
-                  {formData.category === 'slippers' && (
-                    <>
-                      <option value="blockHeel">Block Heel</option>
-                      <option value="flat">Flat</option>
-                      <option value="mediumHeel">Medium Heel</option>
-                      <option value="smallHeel">Small Heel</option>
-                    </>
-                  )}
-                  {formData.category === 'clothing' && (
-                    <>
-                      <option value="krishnaRadha">Krishna Radha</option>
-                      <option value="pasni">Pasni</option>
-                      <option value="daura">Daura Suruwal</option>
-                      <option value="plainKurta">Plain Kurta</option>
-                      <option value="specialKurta">Special Kurta</option>
-                      <option value="gunya">Gunyu Choli</option>
-                    </>
-                  )}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
+            ) : (
+              <>
+                <Upload size={25} />
+                <span>Choose a product image</span>
+              </>
+            )}
+          </button>
+          <input
+            ref={input}
+            type="file"
+            hidden
+            accept="image/jpeg,image/png,image/webp,image/avif"
+            onChange={choose}
+          />
+          <p style={{ fontSize: 11, color: "#697762" }}>
+            JPEG, PNG, WebP or AVIF · up to 10 MB
+          </p>
+          <div className="field-grid">
+            <div className="field">
+              <label htmlFor="product-name">Product name</label>
               <input
-                type="checkbox"
-                id="isAvailable"
-                checked={formData.isAvailable}
-                onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
-                className="w-4 h-4 text-red-900 border-gray-300 rounded focus:ring-red-900"
+                id="product-name"
+                required
+                maxLength={100}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
-              <label htmlFor="isAvailable" className="text-sm font-medium text-gray-700">
-                Product is available
-              </label>
+            </div>
+            <div className="field">
+              <label htmlFor="product-price">Price (e.g. NPR 1200)</label>
+              <input
+                id="product-price"
+                required
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+              />
             </div>
           </div>
-
-          <div className="flex justify-end gap-3 pt-4 border-t">
+          <div className="field-grid">
+            <div className="field">
+              <label htmlFor="product-category">Collection</label>
+              <select
+                id="product-category"
+                value={form.category}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    category: e.target.value as CatalogProduct["category"],
+                    subCategory: "",
+                  })
+                }
+              >
+                <option value="slippers">Footwear</option>
+                <option value="clothing">Clothing</option>
+                <option value="collections">Essentials</option>
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="product-style">Style</label>
+              <select
+                id="product-style"
+                value={form.subCategory}
+                onChange={(e) =>
+                  setForm({ ...form, subCategory: e.target.value })
+                }
+              >
+                <option value="">General collection</option>
+                {subcategories[form.category].map(([id, label]) => (
+                  <option key={id} value={id}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="field">
+            <label htmlFor="product-description">Description</label>
+            <textarea
+              id="product-description"
+              required
+              rows={4}
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+            />
+          </div>
+          <label style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <input
+              type="checkbox"
+              checked={form.isAvailable}
+              onChange={(e) =>
+                setForm({ ...form, isAvailable: e.target.checked })
+              }
+            />
+            Available to order
+          </label>
+          {error && (
+            <p role="alert" className="field-error">
+              {error}
+            </p>
+          )}
+          <div className="modal-actions">
             <button
+              className="text-link"
               type="button"
-              onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-900"
+              onClick={onClose}
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-900 border border-transparent rounded-md hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-900 disabled:opacity-50"
-            >
-              {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              {product ? 'Update Product' : 'Add Product'}
+            <button className="button-primary" type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 size={17} className="animate-spin" />
+                  Saving…
+                </>
+              ) : (
+                "Save product"
+              )}
             </button>
           </div>
         </form>

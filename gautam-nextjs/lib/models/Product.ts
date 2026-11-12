@@ -41,4 +41,7 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+productSchema.index({ isAvailable: 1, category: 1, createdAt: -1 });
+productSchema.index({ category: 1, createdAt: -1 });
+
 export default mongoose.models.Product || mongoose.model('Product', productSchema);

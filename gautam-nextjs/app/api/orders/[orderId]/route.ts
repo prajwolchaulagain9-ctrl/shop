@@ -61,7 +61,7 @@ export async function GET(
         success: true,
         order: {
           _id: order._id,
-          items: order.items,
+          items: order.items.map(item => ({productId:item.productId,name:item.name,price:item.price,quantity:item.quantity,image:item.image.startsWith('data:')?'/api/media/product/'+item.productId:item.image})),
           totalAmount: order.totalAmount,
           paymentMethod: order.paymentMethod,
           paymentStatus: order.paymentStatus,

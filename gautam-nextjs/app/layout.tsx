@@ -1,7 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import localFont from 'next/font/local';
 import "./globals.css";
 import RootLayoutClient from "@/components/RootLayoutClient";
 import "@/lib/utils/validateEnv"; // Validate environment variables on server startup
+
+const displayFont = localFont({ src: '../public/fonts/CormorantGaramond.ttf', variable: '--font-display', display: 'swap' });
+const bodyFont = localFont({ src: '../public/fonts/Manrope.ttf', variable: '--font-body', display: 'swap' });
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -62,9 +66,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}>
       <body
-        className="antialiased bg-white text-gray-900"
+        className="antialiased"
       >
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>

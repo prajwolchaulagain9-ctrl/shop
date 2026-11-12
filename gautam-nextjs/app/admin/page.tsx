@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
 import AdminDashboard from '@/components/AdminDashboard';
 import { useAuth } from '@/lib/contexts/AuthContext';
 
@@ -39,7 +38,6 @@ export default function AdminPage() {
 
   return (
     <>
-      <Navbar />
       <AdminDashboard />
     </>
   );

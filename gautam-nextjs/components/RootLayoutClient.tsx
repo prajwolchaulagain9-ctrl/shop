@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { MotionConfig } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Sidebar from '@/components/Sidebar';
@@ -18,6 +20,8 @@ interface RootLayoutClientProps {
 }
 
 function RootLayoutContent({ children }: RootLayoutClientProps) {
+  const pathname = usePathname();
+  const isAdmin = pathname.startsWith('/admin');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isLoginOpen, openLogin, closeLogin } = useLogin();
 
@@ -31,21 +35,11 @@ function RootLayoutContent({ children }: RootLayoutClientProps) {
     }
 
     // Register service worker for PWA capabilities
-    if ('serviceWorker' in navigator) {
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {
         // Service worker not available - graceful fallback
       });
     }
-
-    // Prevent zoom on double-tap
-    let lastTouchEnd = 0;
-    document.addEventListener('touchend', (event) => {
-      const now = Date.now();
-      if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-      }
-      lastTouchEnd = now;
-    }, false);
 
     // Optimize for mobile orientation changes
     const handleOrientationChange = () => {
@@ -62,13 +56,13 @@ function RootLayoutContent({ children }: RootLayoutClientProps) {
   return (
     <>
       <ErrorBoundary>
-        <Navbar onSidebarToggle={() => setSidebarOpen(!sidebarOpen)} onLoginClick={openLogin} />
+        {!isAdmin && <><a className="skip-link" href="#main-content">Skip to content</a><Navbar onSidebarToggle={() => setSidebarOpen(!sidebarOpen)} onLoginClick={openLogin} /></>}
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <LoginModal isOpen={isLoginOpen} onClose={closeLogin} />
         <Cart />
         <ToastContainer />
         {children}
-        <Footer />
+        {!isAdmin && <Footer />}
       </ErrorBoundary>
     </>
   );
@@ -76,7 +70,7 @@ function RootLayoutContent({ children }: RootLayoutClientProps) {
 
 export default function RootLayoutClient({ children }: RootLayoutClientProps) {
   return (
-    <AuthProvider>
+    <MotionConfig reducedMotion="user"><AuthProvider>
       <ToastProvider>
         <LoginProvider>
           <CartProvider>
@@ -84,6 +78,6 @@ export default function RootLayoutClient({ children }: RootLayoutClientProps) {
           </CartProvider>
         </LoginProvider>
       </ToastProvider>
-    </AuthProvider>
+    </AuthProvider></MotionConfig>
   );
 }

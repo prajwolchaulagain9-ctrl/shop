@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin, forbiddenResponse } from '@/lib/middleware/auth';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { uploadProductImage } from '@/lib/media/cloudinary';
+
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,47 +10,27 @@ export async function POST(request: NextRequest) {
     if (!admin) return forbiddenResponse();
 
     const data = await request.formData();
-    const file: File | null = data.get('file') as unknown as File;
+    const file = data.get('file');
 
-    if (!file) {
+    if (!(file instanceof File)) {
       return NextResponse.json(
         { success: false, message: 'No file provided' },
         { status: 400 }
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Create unique filename
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const filename = `${uniqueSuffix}-${file.name.replace(/\s+/g, '-')}`;
-    
-    let imageUrl = '';
-    try {
-      // Ensure upload directory exists
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-      try {
-        await mkdir(uploadDir, { recursive: true });
-      } catch (err) {
-        // Ignore if exists
-      }
-
-      const filepath = path.join(uploadDir, filename);
-      await writeFile(filepath, buffer);
-      imageUrl = `/uploads/${filename}`;
-    } catch (writeError: any) {
-      console.warn('Local filesystem write failed, falling back to base64 data URL:', writeError);
-      const base64 = buffer.toString('base64');
-      imageUrl = `data:${file.type || 'image/jpeg'};base64,${base64}`;
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(file.type)) {
+      return NextResponse.json({ success: false, message: 'Please choose a JPEG, PNG, WebP or AVIF image.' }, { status: 400 });
     }
-
-    return NextResponse.json({ success: true, url: imageUrl });
-  } catch (error: any) {
-    console.error('Error uploading file:', error);
+    if (!file.size || file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ success: false, message: 'Choose an image smaller than 10 MB.' }, { status: 400 });
+    }
+    const uploaded = await uploadProductImage(Buffer.from(await file.arrayBuffer()));
+    return NextResponse.json({ success: true, url: uploaded.secure_url, publicId: uploaded.public_id, width: uploaded.width, height: uploaded.height });
+  } catch {
     return NextResponse.json(
-      { success: false, message: error.message || 'Internal server error' },
-      { status: 500 }
+      { success: false, message: 'Image upload could not finish. Check the Cloudinary configuration and try again.' },
+      { status: 502 }
     );
   }
 }

@@ -1,114 +1,117 @@
-import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/db/connect';
-import Order from '@/lib/models/Order';
-import { cookies } from 'next/headers';
-import { v4 as uuidv4 } from 'uuid';
-import { buildValidatedOrderItems, calculateOrderTotal } from '@/lib/utils/pricing';
-import { requireAuth } from '@/lib/middleware/auth';
-
-export async function POST(req: NextRequest) {
+import { NextRequest, NextResponse } from "next/server";
+import Order from "@/lib/models/Order";
+import { cookies } from "next/headers";
+import { v4 as uuidv4 } from "uuid";
+import { validateDatabaseOrder } from "@/lib/catalog/validate-order";
+import { requireAuth } from "@/lib/middleware/auth";
+export async function POST(request: NextRequest) {
   try {
-    const auth = await requireAuth(req);
-    if (!auth) {
+    const auth = await requireAuth(request);
+    if (!auth)
       return NextResponse.json(
-        { success: false, message: 'Please login to place an order' },
-        { status: 401 }
+        { success: false, message: "Please sign in to place your order." },
+        { status: 401 },
       );
-    }
-
-    await connectDB();
-
-    const { items, totalAmount, paymentMethod, customerDetails } = await req.json();
-
-    // Validate required fields
-    if (!items || !Array.isArray(items) || items.length === 0) {
+    const { items, totalAmount, paymentMethod, customerDetails } =
+      await request.json();
+    if (paymentMethod !== "cod")
       return NextResponse.json(
-        { success: false, message: 'No items in order' },
-        { status: 400 }
-      );
-    }
-
-    // Calculate total server-side from actual product prices
-    const calculation = calculateOrderTotal(items);
-    
-    if (!calculation.success) {
-      return NextResponse.json(
-        { success: false, message: calculation.error || 'Failed to calculate order total' },
-        { status: 400 }
-      );
-    }
-    
-    // Verify client-sent total matches server calculation
-    const serverTotal = calculation.total;
-    const clientTotal = typeof totalAmount === 'number' ? totalAmount : 0;
-    
-    // Allow small rounding differences (1 NPR) but reject manipulated totals
-    if (Math.abs(serverTotal - clientTotal) > 1) {
-      console.warn('Price manipulation attempt detected:', {
-        clientTotal,
-        serverTotal,
-        items: calculation.breakdown,
-      });
-      
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: 'Order total mismatch. Please refresh and try again.',
-          expectedTotal: serverTotal,
+        {
+          success: false,
+          message:
+            "Cash on Delivery is available. Please contact the shop on WhatsApp for eSewa.",
         },
-        { status: 400 }
+        { status: 400 },
       );
-    }
-    
-    // Use server-calculated total
-    const validatedTotal = serverTotal;
-    const validatedItems = buildValidatedOrderItems(items);
-
-    if (!validatedItems.success) {
+    const name =
+      typeof customerDetails?.name === "string"
+        ? customerDetails.name.trim()
+        : "";
+    const phone =
+      typeof customerDetails?.phone === "string"
+        ? customerDetails.phone.trim()
+        : "";
+    const address =
+      typeof customerDetails?.address === "string"
+        ? customerDetails.address.trim()
+        : "";
+    const email =
+      typeof customerDetails?.email === "string"
+        ? customerDetails.email.trim()
+        : "";
+    if (
+      !name ||
+      name.length > 100 ||
+      !/^[+0-9 ()-]{7,20}$/.test(phone) ||
+      !address ||
+      address.length > 500 ||
+      (email &&
+        (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)))
+    )
       return NextResponse.json(
-        { success: false, message: validatedItems.error || 'Invalid order items' },
-        { status: 400 }
+        {
+          success: false,
+          message: "Please check your name, phone number and delivery address.",
+        },
+        { status: 400 },
       );
-    }
-
-    if (paymentMethod !== 'cod') {
+    let verified;
+    try {
+      verified = await validateDatabaseOrder(items);
+    } catch (cause) {
       return NextResponse.json(
-        { success: false, message: 'Invalid payment method for direct order creation' },
-        { status: 400 }
+        {
+          success: false,
+          message:
+            cause instanceof Error ? cause.message : "Please refresh your bag.",
+        },
+        { status: 400 },
       );
     }
-
-    if (!customerDetails?.name || !customerDetails?.phone || !customerDetails?.address) {
+    if (
+      !Number.isFinite(totalAmount) ||
+      Math.abs(totalAmount - verified.total) > 0.01
+    )
       return NextResponse.json(
-        { success: false, message: 'Customer details are incomplete' },
-        { status: 400 }
+        {
+          success: false,
+          message:
+            "A price has changed. Please refresh your bag before ordering.",
+          expectedTotal: verified.total,
+        },
+        { status: 400 },
       );
-    }
-
+    const location = customerDetails?.location;
+    const validLocation =
+      location &&
+      Number.isFinite(location.lat) &&
+      Number.isFinite(location.lng) &&
+      Math.abs(location.lat) <= 90 &&
+      Math.abs(location.lng) <= 180
+        ? {
+            lat: location.lat,
+            lng: location.lng,
+            formattedAddress:
+              typeof location.formattedAddress === "string"
+                ? location.formattedAddress.slice(0, 500)
+                : undefined,
+          }
+        : undefined;
     const cookieStore = await cookies();
-    let sessionId = cookieStore.get('cart_session_id')?.value;
-
-    if (!sessionId) {
-      sessionId = uuidv4();
-    }
-
-    // Create order
-    const order = new Order({
+    const sessionId = cookieStore.get("cart_session_id")?.value || uuidv4();
+    const order = await Order.create({
       userId: auth.userId,
       sessionId,
-      items: validatedItems.items,
-      totalAmount: validatedTotal, // Use server-calculated total
-      paymentMethod,
-      paymentStatus: paymentMethod === 'cod' ? 'verified' : 'pending',
-      customerDetails,
-      orderStatus: 'pending',
+      items: verified.items,
+      totalAmount: verified.total,
+      paymentMethod: "cod",
+      paymentStatus: "pending",
+      orderStatus: "pending",
+      customerDetails: { name, phone, address, email, location: validLocation },
     });
-
-    await order.save();
-
     const response = NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         order: {
           _id: order._id,
           totalAmount: order.totalAmount,
@@ -116,27 +119,26 @@ export async function POST(req: NextRequest) {
           paymentStatus: order.paymentStatus,
           orderStatus: order.orderStatus,
         },
-        message: `Order placed successfully with ${paymentMethod.toUpperCase()}` 
       },
-      { status: 201 }
+      { status: 201 },
     );
-
-    // Set session cookie if new
-    if (!cookieStore.get('cart_session_id')?.value) {
-      response.cookies.set('cart_session_id', sessionId, {
+    if (!cookieStore.get("cart_session_id")?.value)
+      response.cookies.set("cart_session_id", sessionId, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 30, // 30 days
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
       });
-    }
-
     return response;
-  } catch (error: unknown) {
-    console.error('Error creating order:', error);
+  } catch (cause) {
+    console.error("Order creation failed:", cause);
     return NextResponse.json(
-      { success: false, message: 'Failed to create order' },
-      { status: 500 }
+      {
+        success: false,
+        message: "Your order could not be placed. Please try again.",
+      },
+      { status: 500 },
     );
   }
 }

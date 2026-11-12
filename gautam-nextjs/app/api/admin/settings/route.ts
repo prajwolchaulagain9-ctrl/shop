@@ -27,7 +27,7 @@ export async function PUT(request: NextRequest) {
     );
 
     return NextResponse.json({ success: true, setting });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'Please try again.' }, { status: 500 });
   }
 }

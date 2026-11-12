@@ -1,82 +1,88 @@
-import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/db/connect';
-import Order from '@/lib/models/Order';
-import { requireAdmin, forbiddenResponse } from '@/lib/middleware/auth';
-
-export async function GET(req: NextRequest) {
+import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
+import Order from "@/lib/models/Order";
+import { requireAdmin, forbiddenResponse } from "@/lib/middleware/auth";
+import { pageParams } from "@/lib/catalog/query";
+const orderStatuses = [
+  "pending",
+  "processing",
+  "shipped",
+  "delivered",
+  "cancelled",
+];
+export async function GET(request: NextRequest) {
   try {
-    // Verify admin authentication
-    const admin = await requireAdmin(req);
-    if (!admin) {
-      return forbiddenResponse();
-    }
-
-    // Get query parameters
-    const { searchParams } = new URL(req.url);
-    const status = searchParams.get('status');
-    const sortBy = searchParams.get('sortBy') || 'createdAt';
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-
-    const filter: Record<string, string> = {};
-    if (status) {
-      filter.orderStatus = status;
-    }
-
-    const skip = (page - 1) * limit;
-    const orders = await Order.find(filter)
-      .sort({ [sortBy]: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    const totalCount = await Order.countDocuments(filter);
-
-    return NextResponse.json({
-      orders,
-      totalCount,
-      page,
-      limit,
-      totalPages: Math.ceil(totalCount / limit),
-    });
-  } catch (error) {
-    console.error('Orders error:', error);
-    return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
+    if (!(await requireAdmin(request))) return forbiddenResponse();
+    const { params, page, limit } = pageParams(request, 10);
+    const status = params.get("status");
+    const filter =
+      status && orderStatuses.includes(status) ? { orderStatus: status } : {};
+    const [orders, totalCount] = await Promise.all([
+      Order.find(filter)
+        .select("-items.image")
+        .sort({ createdAt: -1, _id: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      Order.countDocuments(filter),
+    ]);
+    return NextResponse.json(
+      {
+        orders,
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+      },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
+  } catch (cause) {
+    console.error("Orders fetch failed:", cause);
+    return NextResponse.json(
+      { message: "Orders could not load. Please try again." },
+      { status: 500 },
+    );
   }
 }
-
-export async function PATCH(req: NextRequest) {
+export async function PATCH(request: NextRequest) {
   try {
-    // Verify admin authentication
-    const admin = await requireAdmin(req);
-    if (!admin) {
-      return forbiddenResponse();
-    }
-
-    await dbConnect();
-
-    const { orderId, orderStatus, paymentStatus } = await req.json();
-
-    if (!orderId) {
-      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
-    }
-
-    const updateData: Record<string, string> = {};
-    if (orderStatus) updateData.orderStatus = orderStatus;
-    if (paymentStatus) updateData.paymentStatus = paymentStatus;
-
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      updateData,
-      { new: true }
+    if (!(await requireAdmin(request))) return forbiddenResponse();
+    const { orderId, orderStatus, paymentStatus } = await request.json();
+    if (
+      typeof orderId !== "string" ||
+      !mongoose.isValidObjectId(orderId) ||
+      (!orderStatus && !paymentStatus) ||
+      (orderStatus && !orderStatuses.includes(orderStatus)) ||
+      (paymentStatus &&
+        !["pending", "verified", "failed"].includes(paymentStatus))
+    )
+      return NextResponse.json(
+        { message: "Please choose a valid order status." },
+        { status: 400 },
+      );
+    const update = {
+      ...(orderStatus ? { orderStatus } : {}),
+      ...(paymentStatus ? { paymentStatus } : {}),
+    };
+    const order = await Order.findByIdAndUpdate(orderId, update, {
+      new: true,
+      runValidators: true,
+    })
+      .select("-items.image")
+      .lean();
+    if (!order)
+      return NextResponse.json(
+        { message: "Order not found." },
+        { status: 404 },
+      );
+    return NextResponse.json(order, {
+      headers: { "Cache-Control": "private, no-store" },
+    });
+  } catch (cause) {
+    console.error("Order update failed:", cause);
+    return NextResponse.json(
+      { message: "The order could not be updated." },
+      { status: 500 },
     );
-
-    if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(order);
-  } catch (error) {
-    console.error('Update order error:', error);
-    return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
   }
 }

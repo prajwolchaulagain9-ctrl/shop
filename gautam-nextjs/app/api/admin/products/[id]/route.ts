@@ -16,6 +16,9 @@ export async function PUT(
     await dbConnect();
     
     const data = await request.json();
+    if (data.image !== undefined && (typeof data.image !== 'string' || !data.image.startsWith('https://res.cloudinary.com/dizmeykd8/'))) {
+      return NextResponse.json({ success: false, message: 'Please upload the replacement image to Cloudinary.' }, { status: 400 });
+    }
     const updatedProduct = await Product.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
@@ -29,10 +32,10 @@ export async function PUT(
     }
     
     return NextResponse.json({ success: true, product: updatedProduct });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating product:', error);
     return NextResponse.json(
-      { success: false, message: error.message || 'Internal server error' },
+      { success: false, message: (error instanceof Error ? error.message : '') || 'Internal server error' },
       { status: 500 }
     );
   }
@@ -60,10 +63,10 @@ export async function DELETE(
     }
     
     return NextResponse.json({ success: true, message: 'Product deleted' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting product:', error);
     return NextResponse.json(
-      { success: false, message: error.message || 'Internal server error' },
+      { success: false, message: (error instanceof Error ? error.message : '') || 'Internal server error' },
       { status: 500 }
     );
   }

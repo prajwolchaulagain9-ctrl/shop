@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const map: Record<string, string> = {};
     settings.forEach((s) => (map[s.key] = s.value));
     return NextResponse.json({ success: true, settings: map });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({ success: false, message: error instanceof Error ? error.message : 'Please try again.' }, { status: 500 });
   }
 }

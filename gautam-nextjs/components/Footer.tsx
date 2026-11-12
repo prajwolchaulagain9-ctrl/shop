@@ -1,128 +1,54 @@
-'use client';
-
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-
+import Link from "next/link";
 export default function Footer() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4 },
-    },
-  };
-
   return (
-    <footer className="bg-gray-900 text-white pt-12 pb-6">
-      <div className="max-w-7xl mx-auto px-6">
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          {/* Brand */}
-          <motion.div variants={itemVariants}>
-            <h3 className="font-playfair text-xl font-bold text-amber-400 mb-4">
-              Gautam Lady Shoes
-            </h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Preserving Nepal&apos;s traditional craftsmanship for future generations.
-            </p>
-          </motion.div>
-
-          {/* Quick Links */}
-          <motion.div variants={itemVariants}>
-            <h4 className="font-playfair font-bold text-amber-400 mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/slippers" className="text-gray-400 hover:text-white transition-colors">
-                  Traditional Slippers
-                </Link>
-              </li>
-              <li>
-                <Link href="/clothing" className="text-gray-400 hover:text-white transition-colors">
-                  Traditional Clothing
-                </Link>
-              </li>
-              <li>
-                <Link href="/#about" className="text-gray-400 hover:text-white transition-colors">
-                  Our Heritage
-                </Link>
-              </li>
-              <li>
-                <Link href="/#contact" className="text-gray-400 hover:text-white transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
-                  Terms &amp; Conditions
-                </Link>
-              </li>
-            </ul>
-          </motion.div>
-
-          {/* Follow */}
-          <motion.div variants={itemVariants}>
-            <h4 className="font-playfair font-bold text-amber-400 mb-4">Follow Our Journey</h4>
-            <p className="text-gray-400 text-sm">
-              Stay connected with our latest collections and stories from Nepal&apos;s artisan communities.
-            </p>
-          </motion.div>
-
-          {/* Contact Info */}
-          <motion.div variants={itemVariants}>
-            <h4 className="font-playfair font-bold text-amber-400 mb-4">Contact Us</h4>
-            <ul className="space-y-2 text-sm text-gray-400">
-              <li>
-                <span className="block">Machindranath, Kathmandu</span>
-                <span>Nepal 44600</span>
-              </li>
-              <li>
-                <a href="tel:+9779849591758" className="hover:text-white transition-colors">
-                  +977 9849591758
-                </a>
-              </li>
-              <li>
-                <a href="mailto:bharatgautam@gmail.com" className="hover:text-white transition-colors">
-                  bharatgautam@gmail.com
-                </a>
-              </li>
-            </ul>
-          </motion.div>
-        </motion.div>
-
-        {/* Bottom */}
-        <motion.div
-          className="border-t border-gray-800 pt-8"
-          variants={itemVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="text-gray-500 text-sm">
-              &copy; 2026 Gautam Lady Shoes. All rights reserved. | Crafted with love in Nepal
-            </p>
-            <Link href="/terms" className="text-gray-500 text-sm hover:text-amber-400 transition-colors">
-              Terms &amp; Conditions
+    <footer className="store-footer">
+      <div className="container">
+        <div className="footer-grid">
+          <div>
+            <Link className="wordmark" href="/">
+              <span className="wordmark-name">
+                gautam<span>.</span>
+              </span>
+              <span className="wordmark-sub">LADY SHOES · KATHMANDU</span>
             </Link>
+            <p className="footer-copy">
+              Your tradition. Your style.
+              <br />
+              Footwear, clothing, and little things for life&apos;s meaningful
+              moments.
+            </p>
           </div>
-        </motion.div>
+          <div>
+            <p className="footer-title">EXPLORE GAUTAM</p>
+            <div className="footer-links">
+              <Link href="/slippers">Footwear</Link>
+              <Link href="/clothing">Clothing</Link>
+              <Link href="/collections">Essentials</Link>
+              <Link href="/#about">Our story</Link>
+            </div>
+          </div>
+          <div>
+            <p className="footer-title">A LITTLE PERSONAL HELP</p>
+            <a
+              href="https://wa.me/9779849591758"
+              target="_blank"
+              rel="noreferrer"
+            >
+              WhatsApp · +977 9849591758
+            </a>
+            <p>Machindranath, Kathmandu</p>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <span>
+            © {new Date().getFullYear()} Gautam Lady Shoes. All rights reserved.
+          </span>
+          <div>
+            <Link href="/terms">Terms & conditions</Link>
+            <Link href="/account">My account</Link>
+          </div>
+          <span>आफ्नो परम्परा, आफ्नै शैली।</span>
+        </div>
       </div>
     </footer>
   );

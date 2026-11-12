@@ -67,8 +67,8 @@ export default function SiteSettingsPanel() {
       setHeroImage(imageUrl);
       setImageFile(null);
       setStatus({ type: 'success', message: 'Hero image updated! Refresh the home page to see it.' });
-    } catch (error: any) {
-      setStatus({ type: 'error', message: error.message || 'Failed to save settings.' });
+    } catch (error: unknown) {
+      setStatus({ type: 'error', message: (error instanceof Error ? error.message : '') || 'Failed to save settings.' });
     } finally {
       setSaving(false);
     }

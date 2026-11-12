@@ -35,7 +35,7 @@ export async function requireAdmin(request: NextRequest): Promise<AuthenticatedU
 
     // Get user from database and verify admin role
     await connectDB();
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(decoded.userId).select('_id role email').lean();
 
     if (!user || user.role !== 'admin') {
       return null;
@@ -88,7 +88,7 @@ export async function requireAuth(request: NextRequest): Promise<AuthenticatedUs
     }
 
     await connectDB();
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(decoded.userId).select('_id role email').lean();
 
     if (!user) {
       return null;

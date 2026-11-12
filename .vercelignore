@@ -1,0 +1,8 @@
+**/.env*
+**/.media-backups/**
+**/test-results/**
+**/node_modules/**
+**/.next/**
+.git/
+.superdesign/
+prepare_workspace.py

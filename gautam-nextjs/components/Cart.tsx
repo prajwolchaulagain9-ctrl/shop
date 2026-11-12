@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
+import { imageUrl } from '@/lib/media/images';
+import { parsePrice } from '@/lib/utils/currency';
 
 export default function Cart() {
   const router = useRouter();
@@ -25,7 +27,7 @@ export default function Cart() {
   const calculateTotal = () => {
     return cart.reduce((total, item) => {
       // Extract number from price string (e.g., "NPR 1,200" -> 1200)
-      const numericPrice = parseInt(item.price.replace(/[^\d]/g, '')) || 0;
+      const numericPrice = parsePrice(item.price);
       return total + numericPrice * item.quantity;
     }, 0);
   };
@@ -53,7 +55,7 @@ export default function Cart() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50"
+            className="fixed inset-0 bg-black/50 z-[150]"
             onClick={closeCart}
           />
 
@@ -63,19 +65,20 @@ export default function Cart() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-white shadow-2xl z-50 flex flex-col"
+            className="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-white shadow-2xl z-[150] flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-red-900 text-white">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-[#243f32] text-white">
               <div className="flex items-center gap-3">
                 <ShoppingBag className="w-6 h-6" />
                 <h2 className="text-2xl font-playfair font-bold">
-                  Your Cart ({cartCount})
+                  Your bag ({cartCount})
                 </h2>
               </div>
               <button
                 onClick={closeCart}
-                className="p-2 hover:bg-red-800 rounded-lg transition-colors"
+                aria-label="Close your bag"
+                className="p-2 hover:bg-[#385441] rounded-lg transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -103,7 +106,8 @@ export default function Cart() {
                       {/* Product Image */}
                       <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-white">
                         <Image
-                          src={item.image}
+                          src={imageUrl(item.image, 200)}
+                          sizes="96px" unoptimized
                           alt={item.name}
                           fill
                           className="object-cover"
@@ -112,7 +116,7 @@ export default function Cart() {
 
                       {/* Product Details */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-playfair font-semibold text-red-900 text-lg mb-1 truncate">
+                        <h3 className="font-playfair font-semibold text-[#243f32] text-lg mb-1 truncate">
                           {item.name}
                         </h3>
                         <p className="text-amber-600 font-semibold mb-3">
@@ -127,6 +131,7 @@ export default function Cart() {
                                 updateCartItem(item.productId, item.quantity - 1)
                               }
                               disabled={loading || item.quantity <= 1}
+                              aria-label={'Decrease quantity of '+item.name}
                               className="p-2 hover:bg-gray-100 rounded-l-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <Minus className="w-4 h-4" />
@@ -138,7 +143,8 @@ export default function Cart() {
                               onClick={() =>
                                 updateCartItem(item.productId, item.quantity + 1)
                               }
-                              disabled={loading}
+                              disabled={loading || item.quantity >= 99}
+                              aria-label={'Increase quantity of '+item.name}
                               className="p-2 hover:bg-gray-100 rounded-r-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               <Plus className="w-4 h-4" />
@@ -149,7 +155,7 @@ export default function Cart() {
                             onClick={() => removeFromCart(item.productId)}
                             disabled={loading}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Remove from cart"
+                            aria-label={'Remove '+item.name+' from your bag'}
                           >
                             <Trash2 className="w-5 h-5" />
                           </button>
@@ -167,18 +173,18 @@ export default function Cart() {
                 <div className="mb-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-600">Subtotal:</span>
-                    <span className="text-xl font-semibold text-red-900">
+                    <span className="text-xl font-semibold text-[#243f32]">
                       {formatPrice(calculateTotal())}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 text-center">
-                    Shipping calculated at checkout
+                    Free delivery · Cash on Delivery
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <button
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-[#243f32] hover:bg-[#385441] text-white font-semibold py-4 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleCheckout}
                     disabled={loading || cart.length === 0}
                   >
